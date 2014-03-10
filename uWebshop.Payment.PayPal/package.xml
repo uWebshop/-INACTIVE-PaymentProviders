@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<umbPackage>
+	<info>
+		<package>
+			<name>PayPal Payment Provider for uWebshop2</name>
+			<version>2.4.2.0</version>
+			<license url="http://uwebshop.com/terms-conditions">uWebshop License Agreement</license>
+			<url>http://www.uWebshop.com</url>
+			<requirements>
+				<major>4</major>
+				<minor>8</minor>
+				<patch>0</patch>
+			</requirements>
+		</package>
+		<author>
+			<name>uWebshop</name>
+			<website>http://www.uWebshop.com</website>
+		</author>
+		<readme>
+			<![CDATA[PayPal Payment Provider Provider for uWebshop2.1
+            
+            This package wil install the PayPal payment provider for uWebshop 2.1
+            It installs the PayPal Provider DLL and creates the PayPal Node in the Payment Providers Section.
+            
+            
+            Manual Installation guide:
+                      
+            In the root of your Umbraco site you'll find the "config" folder. Inside this folder is a "uWebshop" folder.
+            There you will find the "uwbsPayment.config" file. 
+            (We advise the config folder package to be able to view config files from the umbraco backend)
+            
+            You should add the following lines to the PaymentProviders.config file:
+            
+           <provider title="PayPal">
+              <accountId>info@uwebshop.com</accountId>
+              <url>https://www.paypal.com/cgi-bin/webscr</url>
+              <testURL>https://www.sandbox.paypal.com/us/cgi-bin/webscr</testURL>
+			</provider> 
+                          
+            In the uWebshop section, under Payment Providers > Providers you'll create a new Payment Provider Node called "PayPal".
+            The "Payment Provider Type" should be "Online Payment Provider"
+            The Node Name" should be "PayPal"
+            The DLLname is "uWebshop.Payment.PayPal.dll".
+            The rest can be set to your own needs.
+            ]]>
+		</readme>
+	</info>
+	<files>
+		<file>
+			<guid>uWebshop.Payment.PayPal.dll</guid>
+			<orgPath>/bin</orgPath>
+			<orgName>uWebshop.Payment.PayPal.dll</orgName>
+		</file>
+		<file>
+			<guid>uWebshopPayPalInstaller.ascx</guid>
+			<orgPath>/usercontrols/uWebshop</orgPath>
+			<orgName>uWebshopPayPalInstaller.ascx</orgName>
+		</file>
+	</files>
+	<control>/usercontrols/uWebshop/uWebshopPayPalInstaller.ascx</control>
+</umbPackage>

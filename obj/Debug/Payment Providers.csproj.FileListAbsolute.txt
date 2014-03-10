@@ -1,0 +1,5 @@
+C:\projects\uwebshop2git\Payment Providers\bin\Debug\Payment Providers.dll
+C:\projects\uwebshop2git\Payment Providers\bin\Debug\Payment Providers.pdb
+C:\projects\uwebshop2git\Payment Providers\obj\Debug\Payment Providers.csprojResolveAssemblyReference.cache
+C:\projects\uwebshop2git\Payment Providers\obj\Debug\Payment Providers.dll
+C:\projects\uwebshop2git\Payment Providers\obj\Debug\Payment Providers.pdb

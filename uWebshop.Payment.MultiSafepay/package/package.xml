@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<umbPackage>
+	<info>
+		<package>
+			<name>MultiSafePay for uWebshop2</name>
+			<version>2.4.2.0</version>
+			<license url="http://uwebshop.com/terms-conditions">uWebshop License Agreement</license>
+			<url>http://www.uWebshop.com</url>
+			<requirements>
+				<major>4</major>
+				<minor>8</minor>
+				<patch>0</patch>
+			</requirements>
+		</package>
+		<author>
+			<name>uWebshop</name>
+			<website>http://www.uWebshop.com</website>
+		</author>
+		<readme>
+			<![CDATA[MultiSafePay Payment Provider Provider for uWebshop2.0
+            
+            This package wil install the MultiSafePay payment provider for uWebshop 2.0.
+            It installs the MultiSafePay Provider DLL and creates the MultiSafePay Node in the Payment Providers Section.
+            
+                        
+            Manual Installation guide:
+            
+            In the root of your Umbraco site you'll find the "config" folder. Inside this folder is a "uWebshop" folder.
+            There you will find the "uwbsPayment.config" file. 
+            (We advise the config folder package to be able to view config files from the umbraco backend)
+            
+            You should add the following lines to the uwbsPaymnet.config file:
+                                  
+            <provider title="MultiSafePay">
+                <accountId>#YOUR MULTISAFEPAY ACCOUNT ID#</accountId>
+                <siteId>#YOUR MULTISAFEPAY SITE ID#</siteId>
+                <siteSecureId>#YOUR MULTISAFEPAY SECURE SITE ID#</siteSecureId>
+                <url>https://api.multisafepay.com/ewx/</url>
+                <testURL>https://testapi.multisafepay.com/ewx/</testURL>
+            </provider>   
+            
+            (this snipped includes the testmode set to true!)
+    
+            In the uWebshop section, under Payment Providers > Providers you'll create a new Payment Provider Node called "MultiSafePay".
+            The "Payment Provider Type" should be "Online Payment Provider"
+            The NodeName should be "MultiSafePay"
+            The DLLname is "uWebshop.Payment.MultiSafePay.dll".
+            The rest can be set to your own needs.      
+            ]]>
+		</readme>
+	</info>
+	<files>
+		<file>
+			<guid>uWebshop.Payment.MultiSafePay.dll</guid>
+			<orgPath>/bin</orgPath>
+			<orgName>uWebshop.Payment.MultiSafePay.dll</orgName>
+		</file>
+		<file>
+			<guid>uWebshopMultiSafePayInstaller.ascx</guid>
+			<orgPath>/usercontrols/uWebshop</orgPath>
+			<orgName>uWebshopMultiSafePayInstaller.ascx</orgName>
+		</file>
+	</files>
+	<control>/usercontrols/uWebshop/uWebshopMultiSafePayInstaller.ascx</control>
+</umbPackage>

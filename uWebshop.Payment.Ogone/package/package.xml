@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<umbPackage>
+	<info>
+		<package>
+			<name>Ogone for uWebshop2</name>
+			<version>2.4.2.0</version>
+			<license url="http://uwebshop.com/terms-conditions">uWebshop License Agreement</license>
+			<url>http://www.uWebshop.com</url>
+			<requirements>
+				<major>4</major>
+				<minor>8</minor>
+				<patch>0</patch>
+			</requirements>
+		</package>
+		<author>
+			<name>uWebshop</name>
+			<website>http://www.uWebshop.com</website>
+		</author>
+		<readme>
+			<![CDATA[Ogone Payment Provider Provider for uWebshop2.0
+            
+            This package wil install the Ogone payment provider for uWebshop 2.0.
+            It installs the Ogone Provider DLL and creates the Ogone Node in the Payment Providers Section.
+                        
+                        
+            Manual Installation guide:
+            
+            This package installs a new DLL file.
+            
+            The provider will forward the customer to Ogone to make the payment when they confirm the order.
+            
+            In the root of your Umbraco site you'll find the "config" folder. Inside this folder is a "uWebshop" folder.
+            There you will find the "uwbsPayment.config" file. 
+            (We advise the config folder package to be able to view config files from the umbraco backend)
+            
+            You should add the following lines to the uwbsPaymnet.config file:
+            
+            <provider title="Ogone">
+              <PSPID>#YOUR PSID#</PSPID>
+              <SecureHashAlgorithm>SHA256</SecureHashAlgorithm>
+              <SHAInSignature>#YOUR SHA SIGNATURE</SHAInSignature>
+		          <url>https://secure.ogone.com/ncol/prod/orderstandard.asp</url>
+              <testURL>https://secure.ogone.com/ncol/test/orderstandard.asp</testURL>
+            </provider> 
+            
+            The method name is a a combination of: PM value | BRAND value as can be found on this page:
+            https://secure.ogone.com/ncol/PM_process_procedure.asp?CSRFSP=%2Fncol%2Ftest%2Fdownload_docs%2Easp&CSRFKEY=AF4B9E888439D29E379DD97CB042B2CE2DA29BCB&CSRFTS=20120203135005
+            
+            In the uWebshop section, under Payment Providers > Providers you'll create a new Payment Provider Node called "Ogone".
+            The "Payment Provider Type" should be "Online Payment Provider"
+            The Node Name should be "Ogone"
+            The DLLname is "uWebshop.Payment.Ogone.dll".
+            The rest can be set to your own needs.      
+            ]]>
+		</readme>
+	</info>
+	<files>
+		<file>
+			<guid>uWebshop.Payment.Ogone.dll</guid>
+			<orgPath>/bin</orgPath>
+			<orgName>uWebshop.Payment.Ogone.dll</orgName>
+		</file>
+		<file>
+			<guid>uWebshopOgoneInstaller.ascx</guid>
+			<orgPath>/usercontrols/uWebshop</orgPath>
+			<orgName>uWebshopOgoneInstaller.ascx</orgName>
+		</file>
+	</files>
+	<control>/usercontrols/uWebshop/uWebshopOgoneInstaller.ascx</control>
+</umbPackage>

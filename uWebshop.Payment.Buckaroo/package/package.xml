@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<umbPackage>
+	<info>
+		<package>
+			<name>Buckaroo NVP Payment Provider for uWebshop2</name>
+			<version>2.4.2.0</version>
+			<license url="http://uwebshop.com/terms-conditions">uWebshop License Agreement</license>
+			<url>http://www.uWebshop.com</url>
+			<requirements>
+				<major>4</major>
+				<minor>8</minor>
+				<patch>0</patch>
+			</requirements>
+		</package>
+		<author>
+			<name>uWebshop</name>
+			<website>http://www.uWebshop.com</website>
+		</author>
+		<readme>
+			<![CDATA[Buckaroo Payment Provider Provider for uWebshop
+            
+				This package wil install the PayPal payment provider for uWebshop
+				It installs the Buckaroo Provider DLL and creates the Buckaroo Node in the Payment Providers Section.
+				It also updates the /app_plugins/uWebshop/config/paymentprovdiers.config file            		   
+            ]]>
+		</readme>
+	</info>
+	<files>
+		<file>
+			<guid>uWebshop.Payment.Buckaroo.dll</guid>
+			<orgPath>/bin</orgPath>
+			<orgName>uWebshop.Payment.Buckaroo.dll</orgName>
+		</file>
+	</files>
+</umbPackage>

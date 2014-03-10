@@ -1,0 +1,56 @@
+﻿<?xml version="1.0"?>
+
+<providers>
+	<provider title="Buckaroo">
+		<websitekey>EA0qNfANdb</websitekey>
+		<SecretKey>uwebshopper</SecretKey>
+		<Services>
+			<Service name="ideal">
+				<Issuers>
+					<Issuer>
+						<Code>ABNANL2A</Code>
+						<Name>ABN Ambro</Name>
+					</Issuer>
+					<Issuer>
+						<Code>ASNBNL21</Code>
+						<Name>ASN Bank</Name>
+					</Issuer>
+					<Issuer>
+						<Code>FRBKNL2L</Code>
+						<Name>Friesland Bank</Name>
+					</Issuer>
+					<Issuer>
+						<Code>INGBNL2A</Code>
+						<Name>ING</Name>
+					</Issuer>
+					<Issuer>
+						<Code>RABONL2U</Code>
+						<Name>Rabobank</Name>
+					</Issuer>
+					<Issuer>
+						<Code>SNSBNL2A</Code>
+						<Name>SNS Bank</Name>
+					</Issuer>
+					<Issuer>
+						<Code>RBRBNL21</Code>
+						<Name>RegioBank</Name>
+					</Issuer>
+					<Issuer>
+						<Code>TRIONL2U</Code>
+						<Name>Triodos Bank</Name>
+					</Issuer>
+					<Issuer>
+						<Code>FVLBNL22</Code>
+						<Name>Van Lanschot</Name>
+					</Issuer>
+					<Issuer>
+						<Code>KNABNL2H</Code>
+						<Name>Knab bank</Name>
+					</Issuer>
+				</Issuers>
+			</Service>
+			<Service name="mastercard" title="Mastercard"/>
+			<Service name="visa" title="Visa"/>
+		</Services>
+	</provider>
+</providers>
