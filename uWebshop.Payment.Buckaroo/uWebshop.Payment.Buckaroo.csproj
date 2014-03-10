@@ -40,27 +40,37 @@
     <Reference Include="umbraco">
       <HintPath>..\Binary Dependencies\umbraco.dll</HintPath>
     </Reference>
+    <Reference Include="uWebshop.Common, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\uWebshop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="uWebshop.Domain, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\uWebshop.Domain.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuckarooPaymentBase.cs" />
-    <Compile Include="BuckarooPaymentProvider.cs" />
-    <Compile Include="BuckarooPaymentRequestHandler.cs" />
-    <Compile Include="BuckarooPaymentResponseHandler.cs" />
+    <Compile Include="BuckarooParametersBase.cs" />
+    <Compile Include="BuckarooPaymentBase.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="BuckarooPaymentProvider.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="BuckarooPaymentRequestHandler.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="BuckarooPaymentResponseHandler.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="BuckarooRequestParameters.cs" />
+    <Compile Include="BuckarooResponseParameters.cs" />
+    <Compile Include="BuckarooSignTool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="package\package.xml" />
     <Content Include="PaymentConfigExample.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
-      <Project>{61eef91b-22ed-48f0-83eb-cdc7431c5bde}</Project>
-      <Name>uWebshop.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
-      <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
-      <Name>uWebshop.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

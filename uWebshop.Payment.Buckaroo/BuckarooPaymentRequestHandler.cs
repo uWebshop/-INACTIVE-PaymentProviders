@@ -91,16 +91,23 @@ namespace uWebshop.Payment.Buckaroo
 				reportUrl = reportUrl + "/";
 			}
 
-			var Brq_amount = string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:0.0}", orderInfo.ChargedAmountInCents/100);
-			var Brq_currency = orderInfo.StoreInfo.Store.CurrencyCultureSymbol;
-			var Brq_invoicenumber = orderInfo.OrderNumber;
-			var Brq_payment_method = service;
-			var Brq_return = reportUrl;
-			var Brq_returncancel = reportUrl;
-			var Brq_returnerror = reportUrl;
-			var Brq_returnreject = reportUrl;
-			var Add_transactionReference = orderInfo.UniqueOrderId.ToString();
+            BuckarooRequestParameters requestParams = new BuckarooRequestParameters(paymentProvider.GetSetting("SecretKey"));
+            requestParams.Amount = orderInfo.ChargedAmountInCents / 100;
+            requestParams.Culture = System.Threading.Thread.CurrentThread.CurrentCulture.Name;	
+            requestParams.Currency = orderInfo.StoreInfo.Store.CurrencyCultureSymbol;
+		    requestParams.InvoiceNumber = orderInfo.OrderNumber;
+		    requestParams.PaymentMethod = service;
+		    requestParams.ReturnUrl = reportUrl;
+		    requestParams.ReturnCancelUrl = reportUrl;
+		    requestParams.ReturnErrorUrl = reportUrl;
+		    requestParams.ReturnReject = reportUrl;
+		    requestParams.WebsiteKey = paymentProvider.GetSetting("Websitekey");
 
+		    var transactionId = orderInfo.UniqueOrderId.ToString();		   
+		    requestParams.TransactionId = transactionId;
+			
+			
+			
 			string IssuersServiceKeyName = null;
 			string IssuerServiceKeyValue = null;
 			string IssuerActionKeyName = null;
@@ -112,63 +119,53 @@ namespace uWebshop.Payment.Buckaroo
 				IssuerServiceKeyValue = issuer;
 				IssuerActionKeyName = string.Format("brq_service_{0}_action", service);
 				IssuerActionKeyValue = "Pay";
+
+                requestParams.AddCustomParameter(IssuersServiceKeyName, IssuerServiceKeyValue);
+                requestParams.AddCustomParameter(IssuerActionKeyName, IssuerActionKeyValue);
 			}
 
-			var Brq_websitekey = paymentProvider.GetSetting("Websitekey");
-			var SecretKey = paymentProvider.GetSetting("SecretKey");
+		    if (service.Equals("transfer"))
+		    {
+		        requestParams.AddCustomParameter("brq_service_transfer_customeremail", orderInfo.CustomerEmail);
+                requestParams.AddCustomParameter("brq_service_transfer_customerfirstname", orderInfo.CustomerFirstName);
+                requestParams.AddCustomParameter("brq_service_transfer_customerlastname", orderInfo.CustomerLastName);
+		    }
 
-			var stringToHash =  "add_transactionReference=" + Add_transactionReference +
-								"brq_amount=" + Brq_amount +
-			                   "brq_currency=" + Brq_currency +
-			                   "brq_invoicenumber=" + Brq_invoicenumber +
-			                   "brq_payment_method=" + Brq_payment_method +
-			                   "brq_return=" + Brq_return +
-			                   "brq_returncancel=" + Brq_returncancel +
-			                   "brq_returnerror=" + Brq_returnerror +
-			                   "brq_returnreject=" + Brq_returnreject +
-			                   "brq_websitekey=" + Brq_websitekey +
-			                   SecretKey;
-			if (!string.IsNullOrEmpty(issuer))
-			{
+		    if (service.Equals("onlinegiro"))
+		    {
+                requestParams.AddCustomParameter("brq_service_onlinegiro_customergender", "9");
+                requestParams.AddCustomParameter("brq_service_onlinegiro_customeremail", orderInfo.CustomerEmail);
+                requestParams.AddCustomParameter("brq_service_onlinegiro_customerfirstname", orderInfo.CustomerFirstName);
+                requestParams.AddCustomParameter("brq_service_onlinegiro_customerlastname", orderInfo.CustomerLastName);
+		    }
 
-				stringToHash = "add_transactionReference=" + Add_transactionReference + 
-								"brq_amount=" + Brq_amount +
-							   "brq_currency=" + Brq_currency +
-							   "brq_invoicenumber=" + Brq_invoicenumber +
-							   "brq_payment_method=" + Brq_payment_method +
-							   "brq_return=" + Brq_return +
-							   "brq_returncancel=" + Brq_returncancel +
-							   "brq_returnerror=" + Brq_returnerror +
-							   "brq_returnreject=" + Brq_returnreject +
-							   IssuerActionKeyName + "=" + IssuerActionKeyValue +
-							   IssuersServiceKeyName + "=" + IssuerServiceKeyValue +
-							   "brq_websitekey=" + Brq_websitekey +
-							   SecretKey;
-			}
+			requestParams.Sign();
 
-			var Brq_signature = CreateHash(stringToHash);
 			
 			var request = new PaymentRequest();
-			request.Parameters.Add("add_transactionReference", Add_transactionReference);
-			request.Parameters.Add("brq_amount", Brq_amount);
-			request.Parameters.Add("brq_currency", Brq_currency);
-			request.Parameters.Add("brq_invoicenumber", Brq_invoicenumber);
-			request.Parameters.Add("brq_payment_method", Brq_payment_method);
-			request.Parameters.Add("brq_return", Brq_return);
-			request.Parameters.Add("brq_returncancel", Brq_returncancel);
-			request.Parameters.Add("brq_returnerror", Brq_returnerror);
-			request.Parameters.Add("brq_returnreject", Brq_returnreject);
+            //request.Parameters.Add("add_transactionReference", Add_transactionReference);
+            //request.Parameters.Add("brq_amount", Brq_amount);
+            //request.Parameters.Add("brq_currency", Brq_currency);
+            //request.Parameters.Add("brq_invoicenumber", Brq_invoicenumber);
+            //request.Parameters.Add("brq_payment_method", Brq_payment_method);
+            //request.Parameters.Add("brq_return", Brq_return);
+            //request.Parameters.Add("brq_returncancel", Brq_returncancel);
+            //request.Parameters.Add("brq_returnerror", Brq_returnerror);
+            //request.Parameters.Add("brq_returnreject", Brq_returnreject);
+            
 
-			if (!string.IsNullOrEmpty(issuer))
-			{
-				request.Parameters.Add(IssuerActionKeyName, IssuerActionKeyValue);
+            //if (!string.IsNullOrEmpty(issuer))
+            //{
+            //    request.Parameters.Add(IssuerActionKeyName, IssuerActionKeyValue);
 
-				request.Parameters.Add(IssuersServiceKeyName, IssuerServiceKeyValue);
+            //    request.Parameters.Add(IssuersServiceKeyName, IssuerServiceKeyValue);
 
-			}
+            //}
+   
 			
-			request.Parameters.Add("brq_websitekey", Brq_websitekey);
-			request.Parameters.Add("brq_signature", Brq_signature);
+            //request.Parameters.Add("brq_websitekey", Brq_websitekey);
+            //request.Parameters.Add("brq_signature", Brq_signature);
+		    request.Parameters = requestParams.GetParameters();
 
 
 			var uri = new Uri(url);
@@ -197,11 +194,16 @@ namespace uWebshop.Payment.Buckaroo
 					var result = HttpUtility.ParseQueryString(value);
 
 					orderInfo.PaymentInfo.Url = result["brq_redirecturl"];
+
+				    if (service == "onlinegiro" || service == "transfer")
+				    {
+				        orderInfo.PaymentInfo.Url = reportUrl + "?" + value;
+				    }
 				}
 
 			}
 			
-			PaymentProviderHelper.SetTransactionId(orderInfo, Add_transactionReference);
+			PaymentProviderHelper.SetTransactionId(orderInfo, transactionId);
 			
 			return request;
 		}
@@ -209,27 +211,6 @@ namespace uWebshop.Payment.Buckaroo
 		public string GetPaymentUrl(OrderInfo orderInfo)
 		{
 			return orderInfo.PaymentInfo.Url;
-		}
-
-		public string CreateHash(string hashString)
-		{
-			var builder = new StringBuilder();
-
-			var sha1Provider = new SHA1CryptoServiceProvider();
-
-			//convert input to byte array
-			byte[] messageArray = Encoding.UTF8.GetBytes(hashString);
-
-			//calculate hash over byte array
-			byte[] hash1 = sha1Provider.ComputeHash(messageArray);
-
-			//convert byte array to string by printing each hex value.
-			foreach (byte b in hash1)
-			{
-				builder.Append(b.ToString("x2"));
-			}
-			//get the result from the string builder object.
-			return builder.ToString();
-		}
+		}		
 	}
 }

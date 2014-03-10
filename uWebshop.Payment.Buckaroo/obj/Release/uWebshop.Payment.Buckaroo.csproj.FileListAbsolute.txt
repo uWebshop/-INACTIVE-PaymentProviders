@@ -15,14 +15,3 @@ C:\projects\uwebshop2git\uWebshop.Payment.Buckaroo\bin\Release\umbraco.XmlSerial
 C:\projects\uwebshop2git\uWebshop.Payment.Buckaroo\obj\Release\uWebshop.Payment.Buckaroo.csprojResolveAssemblyReference.cache
 C:\projects\uwebshop2git\uWebshop.Payment.Buckaroo\obj\Release\uWebshop.Payment.Buckaroo.dll
 C:\projects\uwebshop2git\uWebshop.Payment.Buckaroo\obj\Release\uWebshop.Payment.Buckaroo.pdb
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\bin\Release\uWebshop.Payment.Buckaroo.dll
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\bin\Release\uWebshop.Payment.Buckaroo.pdb
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\bin\Release\uWebshop.Common.dll
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\bin\Release\uWebshop.Domain.dll
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\bin\Release\uWebshop.DataAccess.dll
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\bin\Release\uWebshop.Common.pdb
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\bin\Release\uWebshop.Domain.pdb
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\bin\Release\uWebshop.DataAccess.pdb
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\obj\Release\uWebshop.Payment.Buckaroo.csprojResolveAssemblyReference.cache
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\obj\Release\uWebshop.Payment.Buckaroo.dll
-C:\projects\uwebshop2git\PaymentProviders\uWebshop.Payment.Buckaroo\obj\Release\uWebshop.Payment.Buckaroo.pdb
