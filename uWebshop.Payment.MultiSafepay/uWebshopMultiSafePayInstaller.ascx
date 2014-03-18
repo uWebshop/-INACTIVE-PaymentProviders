@@ -7,7 +7,7 @@
 	<img src="/App_Plugins/uWebshop/images/uwebshop32x32.png" alt="uWebshop" class="dashboardIcon" />
 	<p>Use the installer below to install the MultiSafepay Payment Provider in your store.</p>
 	<p>There are some properties to be set on the MultiSafepay node after installation before MultiSafepay will work.</p>
-	<p>If you need any help please visit <a href="http://support.uwebshop.com" title="uWebshop Support">our support site</a></p>
+	<p>If you need any help please visit our <a target="_blank" href="http://docs.uWebshop.com">documentation</a> or <a href="http://support.uwebshop.com" title="uWebshop Support">support site</a></p>
                     
 	<asp:Label runat="server" ID="lblAccountId" AssociatedControlID="txtAccountId" Text="Your MultiSafePay account Id : "/>
 	<asp:TextBox runat="server" ID="txtAccountId"/>

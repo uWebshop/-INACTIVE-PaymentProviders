@@ -7,12 +7,8 @@
 	<img src="/App_Plugins/uWebshop/images/uwebshop32x32.png" alt="uWebshop" class="dashboardIcon" />
 	<p>Use the installer below to install the Ogone Payment Provider in your store.</p>
 	<p>There are some properties to be set on the Ogone node after installation before Ogone will work.</p>
-	<p>If you need any help please visit <a href="http://support.uwebshop.com" title="uWebshop Support">our support site</a></p>
-                    
-		<MerchantId>#YOUR OmniKassa MerchantId#</MerchantId>      
-							<CurrencyCode>978</CurrencyCode>
-							<normalReturnUrl>http://www.yoursite.com</normalReturnUrl>
-
+	<p>If you need any help please visit our <a target="_blank" href="http://docs.uWebshop.com">documentation</a> or <a href="http://support.uwebshop.com" title="uWebshop Support">support site</a></p>
+     
 	<asp:Label runat="server" ID="lblMerchantId" AssociatedControlID="txtMerchantId" Text="Your Omnikassa MerchantId: "/>
 	<asp:TextBox runat="server" ID="txtMerchantId"/>
 	<asp:Label runat="server" ID="lblSecurityKey" AssociatedControlID="txtSecurityKey" Text="Your Omnikassa Security Key: "/>
