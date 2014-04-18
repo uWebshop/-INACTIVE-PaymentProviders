@@ -1,0 +1,16 @@
+uWebshop.Payment.Buckaroo/obj/
+uWebshop.Payment.Mollie/obj/
+uWebshop.Payment.Ogone/package/
+uWebshop.Payment.ePay/obj/
+uWebshop.Payment.ePay/bin/
+uWebshop.Payment.PayPal/obj/
+uWebshop.Payment.PayPal/bin/
+uWebshop.Payment.Omnikassa/obj/
+uWebshop.Payment.Omnikassa/bin/
+uWebshop.Payment.Mollie/bin/
+uWebshop.Payment.Mollie/package/
+uWebshop.Payment.MultiSafepay/bin/
+uWebshop.Payment.MultiSafepay/obj/
+uWebshop.Payment.MultiSafepay/package/
+uWebshop.Payment.Ogone/bin/
+uWebshop.Payment.Ogone/obj/

@@ -9,46 +9,60 @@ using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Payment.Mollie
 {
-	public class MolliePaymentProvider : MolliePaymentBase, IPaymentProvider
-	{
-		#region IPaymentProvider Members
-		
-		PaymentTransactionMethod IPaymentProvider.GetParameterRenderMethod()
-		{
-			return PaymentTransactionMethod.QueryString;
-		}
+    public class MolliePaymentProvider : MolliePaymentBase, IPaymentProvider
+    {
+        PaymentTransactionMethod IPaymentProvider.GetParameterRenderMethod()
+        {
+            return PaymentTransactionMethod.QueryString;
+        }
 
-		public IEnumerable<PaymentProviderMethod> GetAllPaymentMethods(int id)
-		{
-			var paymentProvider = PaymentProvider.GetPaymentProvider(id);
-			
-			var testMode = paymentProvider.TestMode;
+        public IEnumerable<PaymentProviderMethod> GetAllPaymentMethods(int id)
+        {
+            var paymentMethods = new List<PaymentProviderMethod>();
 
-			var partnerId = paymentProvider.GetSetting("PartnerId");
+            var paymentProvider = PaymentProvider.GetPaymentProvider(id);
 
-			var banks = new IdealBanks(partnerId, testMode);
 
-			var paymentMethods = new List<PaymentProviderMethod>();
+            if (paymentProvider == null)
+            {
+                Log.Instance.LogError(
+                    "Mollie PaymentProvider 'GetAllPaymentMethods' paymentProvider == null");
 
-			foreach (var bank in banks.Banks)
-			{
-				int paymentImageId;
+                return paymentMethods;
+            }
 
-				int.TryParse(umbraco.library.GetDictionaryItem(bank.Name + "LogoId"), out paymentImageId);
+            var testMode = paymentProvider.TestMode;
 
-				paymentMethods.Add(new PaymentProviderMethod
-				                   {
-					                   Id = bank.Id, 
-									   Description = string.Format("iDEAL via {0}", bank.Name), 
-									   Title = bank.Name, 
-									   Name = bank.Name, 
-									   ProviderName = GetName()
-				                   });
-			}
+            var partnerId = paymentProvider.GetSetting("PartnerId");
 
-			return paymentMethods;
-		}
+            if (partnerId == null)
+            {
+                Log.Instance.LogError(
+                    "Mollie PaymentProvider 'partnerId' not found in the PaymentProvider config file. Is the config correct?");
+            }
+            else
+            {
+                var banks = new IdealBanks(partnerId, testMode);
 
-		#endregion
-	}
+                foreach (var bank in banks.Banks)
+                {
+                    int paymentImageId;
+
+                    int.TryParse(umbraco.library.GetDictionaryItem(bank.Name + "LogoId"), out paymentImageId);
+
+                    paymentMethods.Add(new PaymentProviderMethod
+                    {
+                        Id = bank.Id,
+                        Description = string.Format("iDEAL via {0}", bank.Name),
+                        Title = bank.Name,
+                        Name = bank.Name,
+                        ProviderName = GetName()
+                    });
+                }
+            }
+
+            return paymentMethods;
+        }
+    }
+
 }

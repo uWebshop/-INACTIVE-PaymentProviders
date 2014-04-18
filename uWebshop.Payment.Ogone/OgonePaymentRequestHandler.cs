@@ -22,8 +22,23 @@ namespace uWebshop.Payment.Ogone
 			var pspId = paymentProvider.GetSetting("PSPID");
 			var shaInSignature = paymentProvider.GetSetting("SHAInSignature");
 			var secureHashAlgorithm = paymentProvider.GetSetting("SecureHashAlgorithm");
-			var testURL = paymentProvider.GetSetting("testURL");
-			var liveUrl = paymentProvider.GetSetting("url");
+
+            var liveUrl = "https://secure.ogone.com/ncol/prod/orderstandard.asp";
+            var testUrl = "https://secure.ogone.com/ncol/test/orderstandard.asp";
+
+            var configLiveUrl = paymentProvider.GetSetting("Url");
+            var configTestUrl = paymentProvider.GetSetting("testUrl");
+
+            if (!string.IsNullOrEmpty(configLiveUrl))
+            {
+                liveUrl = configLiveUrl;
+            }
+            if (!string.IsNullOrEmpty(configTestUrl))
+            {
+                testUrl = configTestUrl;
+            }
+
+            var url = paymentProvider.TestMode ? testUrl : liveUrl;
 
 			var request = new PaymentRequest();
 			request.Parameters.Add("PSPID", pspId);
@@ -50,12 +65,15 @@ namespace uWebshop.Payment.Ogone
 			request.Parameters.Add("PARAMPLUS", string.Format("TransactionId={0}", transactionId));
 
 
-			if (orderInfo.PaymentInfo.MethodTitle.Contains('|'))
+			if (orderInfo.PaymentInfo.MethodId.Contains('|'))
 			{
-				var temp = orderInfo.PaymentInfo.MethodTitle.Split('|');
+                var splitarray = orderInfo.PaymentInfo.MethodId.Split('|');
 
-				request.Parameters.Add("PM", temp[0]);
-				request.Parameters.Add("BRAND", temp[1]);
+                var pm = splitarray[0];
+                var brand = splitarray[1];
+
+                request.Parameters.Add("PM", pm);
+				request.Parameters.Add("BRAND", brand);
 			}
 			else
 			{
@@ -83,7 +101,7 @@ namespace uWebshop.Payment.Ogone
 					break;
 			}
 
-			request.PaymentUrlBase = paymentProvider.TestMode ? testURL : liveUrl;
+		    request.PaymentUrlBase = url;
 
 			orderInfo.PaymentInfo.Url = request.PaymentUrl;
 			orderInfo.PaymentInfo.Parameters = request.ParametersAsString;

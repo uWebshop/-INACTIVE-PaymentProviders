@@ -1,0 +1,43 @@
+﻿<?xml version="1.0"?>
+
+<providers>
+	<provider title="Ogone">
+		<PSPID>#YOUR PSID#</PSPID>
+    <SecureHashAlgorithm>SHA256</SecureHashAlgorithm>
+    <SHAInSignature>#YOUR SHA SIGNATURE</SHAInSignature>
+		<Services>
+      <Service name="CreditCard">
+        <Issuers>
+          <Issuer>
+            <Code>American Express</Code>
+            <Name>American Express</Name>
+          </Issuer>
+          <Issuer>
+            <Code>MasterCard</Code>
+            <Name>MasterCard</Name>
+          </Issuer>
+          <Issuer>
+            <Code>VISA</Code>
+            <Name>VISA</Name>
+          </Issuer>
+        </Issuers>
+      </Service>
+      <Service name="iDEAL">
+        <Issuers>
+          <Issuer>
+            <Code>iDEAL</Code>
+            <Name>iDeal</Name>
+          </Issuer>
+        </Issuers>
+      </Service>
+      <Service name="PAYPAL">
+        <Issuers>
+          <Issuer>
+            <Code>PAYPAL</Code>
+            <Name>PayPal</Name>
+          </Issuer>
+        </Issuers>
+      </Service>
+		</Services>
+	</provider>
+</providers>

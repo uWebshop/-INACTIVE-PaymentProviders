@@ -68,9 +68,9 @@ namespace uWebshop.Payment
 					//</provider> 
 
 
-					var PayPalNode = new XElement("provider", new XAttribute("title", "Ogone"), new XElement("PSPID", ogoneAccountId), new XElement("SecureHashAlgorithm", "SHA256"), new XElement("SHAInSignature", ogoneSHASignature), new XElement("url", "https://secure.ogone.com/ncol/prod/orderstandard.asp"), new XElement("testURL", "https://secure.ogone.com/ncol/test/orderstandard.asp"));
+					var oGoneConfig = new XElement("provider", new XAttribute("title", "Ogone"), new XElement("PSPID", ogoneAccountId), new XElement("SecureHashAlgorithm", "SHA256"), new XElement("SHAInSignature", ogoneSHASignature));
 
-					paymentProviderXDoc.Descendants("providers").FirstOrDefault().Add(PayPalNode);
+					paymentProviderXDoc.Descendants("providers").FirstOrDefault().Add(oGoneConfig);
 
 					paymentProviderXDoc.Save(paymentProviderXML);
 
@@ -87,25 +87,22 @@ namespace uWebshop.Payment
 						var providerDoc = Document.MakeNew("Ogone", dtuwbsPaymentProvider, author, uwbsPaymentProviderSectionDoc.Id);
 						providerDoc.SetProperty("title", "Ogone");
 						providerDoc.SetProperty("description", "Ogone Payment Provider for uWebshop");
-
-						providerDoc.SetProperty("type", PaymentProviderType.OnlinePayment.ToString());
-						providerDoc.SetProperty("dllName", "uWebshop.Payment.Ogone");
-
+                        providerDoc.SetProperty("type", PaymentProviderType.OnlinePayment.ToString());
 						providerDoc.Save();
 
-						var dtuwbsPaymentProviderMethod = DocumentType.GetByAlias(PaymentProviderMethod.NodeAlias);
+                        //var dtuwbsPaymentProviderMethod = DocumentType.GetByAlias(PaymentProviderMethod.NodeAlias);
 
-						var methodDocMasterCard = Document.MakeNew("CreditCardMasterCard", dtuwbsPaymentProviderMethod, author, providerDoc.Id);
-						methodDocMasterCard.SetProperty("title", "CreditCard|MasterCard");
-						methodDocMasterCard.SetProperty("description", "Mastercard Payment Method using Ogone");
+                        //var methodDocMasterCard = Document.MakeNew("CreditCardMasterCard", dtuwbsPaymentProviderMethod, author, providerDoc.Id);
+                        //methodDocMasterCard.SetProperty("title", "CreditCard|MasterCard");
+                        //methodDocMasterCard.SetProperty("description", "Mastercard Payment Method using Ogone");
 
-						methodDocMasterCard.Save();
+                        //methodDocMasterCard.Save();
 
-						var methodDocVisa = Document.MakeNew("CreditCardVisa", dtuwbsPaymentProviderMethod, author, providerDoc.Id);
-						methodDocVisa.SetProperty("title", "CreditCard|Visa");
-						methodDocVisa.SetProperty("description", "Visa Payment Method using Ogone");
+                        //var methodDocVisa = Document.MakeNew("CreditCardVisa", dtuwbsPaymentProviderMethod, author, providerDoc.Id);
+                        //methodDocVisa.SetProperty("title", "CreditCard|Visa");
+                        //methodDocVisa.SetProperty("description", "Visa Payment Method using Ogone");
 
-						methodDocVisa.Save();
+                        //methodDocVisa.Save();
 
 
 						BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Ogone Installed!", "Ogone config added and nodes created");

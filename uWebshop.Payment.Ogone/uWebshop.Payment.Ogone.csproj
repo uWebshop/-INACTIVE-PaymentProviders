@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="package.xml" />
+    <Content Include="PaymentConfigExample.xml" />
     <Content Include="uWebshopOgoneInstaller.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
