@@ -19,25 +19,48 @@ namespace uWebshop.Payment.Omnikassa
 			var reportUrl = paymentProvider.ReportUrl();
 
 			//	<provider title="OmniKassa">
-			//  <MerchantId>002020000000001</MerchantId>
-			//  <CurrencyCode>978</CurrencyCode>
-			//  <normalReturnUrl>http://www.hetanker.tv</normalReturnUrl>
-			//  <KeyVersion>1</KeyVersion>
-			//  <TestAmount>56</TestAmount>
-			//  <Url>https://payment-webinit.omnikassa.rabobank.nl/paymentServlet</Url>
-			//  <TestUrl>https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet</TestUrl>
-			//  <ForwardUrl>https://payment-web.omnikassa.rabobank.nl/payment</ForwardUrl>
-			//  <TestForwardUrl>https://payment-web.simu.omnikassa.rabobank.nl/payment</TestForwardUrl>
-			//</provider>
+			//    <MerchantId>002020000000001</MerchantId>
+			//    <CurrencyCode>978</CurrencyCode>
+			//    <normalReturnUrl>http://www.hetanker.tv</normalReturnUrl>
+			//    <KeyVersion>1</KeyVersion>
+			//    <TestAmount>56</TestAmount>
+			//  </provider>
 
 			var merchantId = paymentProvider.GetSetting("MerchantId");
 			var keyVersion = paymentProvider.GetSetting("KeyVersion");
 			var currencyCode = paymentProvider.GetSetting("CurrencyCode");
 			var testAmount = paymentProvider.GetSetting("testAmount");
-			var testUrl = paymentProvider.GetSetting("testUrl");
-			var liveUrl = paymentProvider.GetSetting("url");
-			var testForwardUrl = paymentProvider.GetSetting("testForwardUrl");
-			var liveForwardUrl = paymentProvider.GetSetting("forwardUrl");
+            
+            var liveUrl = "https://payment-webinit.omnikassa.rabobank.nl/paymentServlet";
+		    var testUrl = "https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet";
+		    
+            var configLiveUrl = paymentProvider.GetSetting("Url");
+            var configTestUrl = paymentProvider.GetSetting("testUrl");
+            
+            if (!string.IsNullOrEmpty(configLiveUrl))
+            {
+                liveUrl = configLiveUrl;
+            }
+		    if (!string.IsNullOrEmpty(configTestUrl))
+		    {
+		        testUrl = configTestUrl;
+		    }
+
+            var liveForwardUrl = "https://payment-web.omnikassa.rabobank.nl/payment";
+		    var testForwardUrl = "https://payment-web.simu.omnikassa.rabobank.nl/payment";
+
+            var configForwardLiveUrl = paymentProvider.GetSetting("forwardUrl");
+            var configForwardTestUrl = paymentProvider.GetSetting("testForwardUrl");
+
+            if (!string.IsNullOrEmpty(configForwardLiveUrl))
+            {
+                liveForwardUrl = configForwardLiveUrl;
+            }
+            if (!string.IsNullOrEmpty(configForwardTestUrl))
+            {
+                testForwardUrl = configForwardTestUrl;
+            }
+
 
 			var securityKey = paymentProvider.GetSetting("SecurityKey");
 			
@@ -55,15 +78,15 @@ namespace uWebshop.Payment.Omnikassa
 				orderId = orderInfo.OrderNumber.Substring(0, 31);
 			}
 
-			var uniqueId = orderId + "x" + DateTime.Now.ToString("hhmmss");
+			var transactionId = orderId + "x" + DateTime.Now.ToString("hhmmss");
 
 			var rgx = new Regex("[^a-zA-Z0-9]");
-			uniqueId = rgx.Replace(uniqueId, "");
+			transactionId = rgx.Replace(transactionId, "");
 
-			if (uniqueId.Length > 35)
+			if (transactionId.Length > 35)
 			{
-				Log.Instance.LogError("OmniKassa: uniqueId (orderId + 'x' + DateTime.Now.ToString('hhmmss')): Too Long, Max 35 Characters! uniqueId: " + uniqueId);
-				uniqueId = uniqueId.Substring(0, 34);
+				Log.Instance.LogError("OmniKassa: uniqueId (orderId + 'x' + DateTime.Now.ToString('hhmmss')): Too Long, Max 35 Characters! uniqueId: " + transactionId);
+				transactionId = transactionId.Substring(0, 34);
 			}
 			
 			if (reportUrl.Length > 512)
@@ -73,7 +96,7 @@ namespace uWebshop.Payment.Omnikassa
 
 			// Data-veld samenstellen
 			var data = string.Format("merchantId={0}", merchantId) + string.Format("|orderId={0}", orderId) + string.Format("|amount={0}", amount) + string.Format("|customerLanguage={0}", "NL") + string.Format("|keyVersion={0}", keyVersion) + string.Format("|currencyCode={0}", currencyCode) // + string.Format("|PaymentMeanBrandList={0}", "IDEAL")
-			           + string.Format("|normalReturnUrl={0}", reportUrl) + string.Format("|automaticResponseUrl={0}", reportUrl) + string.Format("|transactionReference={0}", uniqueId);
+			           + string.Format("|normalReturnUrl={0}", reportUrl) + string.Format("|automaticResponseUrl={0}", reportUrl) + string.Format("|transactionReference={0}", transactionId);
 
 			// Seal-veld berekenen
 			var sha256 = SHA256.Create();
@@ -97,7 +120,7 @@ namespace uWebshop.Payment.Omnikassa
 				var postValueFromHiddenField = Regex.Matches(matchedHiddenfield[0].Value, "(?<=\\bvalue=\")[^\"]*", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 				var redirectionDataField = string.Format("redirectionData={0}", postValueFromHiddenField[0].Value);
 
-				PaymentProviderHelper.SetTransactionId(orderInfo, uniqueId);
+				PaymentProviderHelper.SetTransactionId(orderInfo, transactionId);
 				orderInfo.PaymentInfo.Url = forwardUrl;
 				orderInfo.PaymentInfo.Parameters = redirectionDataField;
 

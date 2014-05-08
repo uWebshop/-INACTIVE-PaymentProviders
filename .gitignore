@@ -14,3 +14,8 @@ uWebshop.Payment.MultiSafepay/obj/
 uWebshop.Payment.MultiSafepay/package/
 uWebshop.Payment.Ogone/bin/
 uWebshop.Payment.Ogone/obj/
+uWebshop.Payment.Borgun/bin/
+uWebshop.Payment.Borgun/obj/
+uWebshop.Payment.Omnikassa/package/
+uWebshop.Payment.PayPal/package/
+uWebshop.Payment.SagePay/obj/

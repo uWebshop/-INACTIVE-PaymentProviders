@@ -6,8 +6,6 @@ using System.Text;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using umbraco;
-using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Payment.Ogone
 {
