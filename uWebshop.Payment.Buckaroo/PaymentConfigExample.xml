@@ -51,6 +51,8 @@
 			</Service>
 			<Service name="mastercard" title="Mastercard"/>
 			<Service name="visa" title="Visa"/>
+			<Service name="bancontactmrcash" title="Mr Cash"/>
+			<Service name="paypal" title="PayPal"/>
 		</Services>
 	</provider>
 </providers>

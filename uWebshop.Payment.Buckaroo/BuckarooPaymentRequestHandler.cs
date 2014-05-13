@@ -92,7 +92,7 @@ namespace uWebshop.Payment.Buckaroo
 			}
 
             BuckarooRequestParameters requestParams = new BuckarooRequestParameters(paymentProvider.GetSetting("SecretKey"));
-            requestParams.Amount = orderInfo.ChargedAmountInCents / 100;
+            requestParams.Amount = orderInfo.ChargedAmountInCents / 100m;
             requestParams.Culture = System.Threading.Thread.CurrentThread.CurrentCulture.Name;	
             requestParams.Currency = orderInfo.StoreInfo.Store.CurrencyCultureSymbol;
 		    requestParams.InvoiceNumber = orderInfo.OrderNumber;
