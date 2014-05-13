@@ -6,8 +6,6 @@ using System.Text;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using umbraco;
-using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Payment.Ogone
 {
@@ -65,9 +63,9 @@ namespace uWebshop.Payment.Ogone
 			request.Parameters.Add("PARAMPLUS", string.Format("TransactionId={0}", transactionId));
 
 
-			if (orderInfo.PaymentInfo.MethodId.Contains('|'))
+			if (orderInfo.PaymentInfo.MethodId.Contains('-'))
 			{
-                var splitarray = orderInfo.PaymentInfo.MethodId.Split('|');
+                var splitarray = orderInfo.PaymentInfo.MethodId.Split('-');
 
                 var pm = splitarray[0];
                 var brand = splitarray[1];

@@ -18,40 +18,10 @@
 			<website>http://www.uWebshop.com</website>
 		</author>
 		<readme>
-			<![CDATA[Omnikassa Payment Provider Provider for uWebshop2.0
+			<![CDATA[Omnikassa Payment Provider Provider for uWebshop
             
-            This package wil install the Omnikassa payment provider for uWebshop 2.0.
-            It installs the Omnikassa Provider DLL and creates the Omnikassa Node in the Payment Providers Section.
-                        
-            Manual Installation guide:
-            
-            This package installs a new DLL file.
-            
-            The provider will forward the customer to Omnikassa to make the payment when they confirm the order.
-            
-            In the root of your Umbraco site you'll find the "config" folder. Inside this folder is a "uWebshop" folder.
-            There you will find the "uwbsPayment.config" file. 
-            (We advise the config folder package to be able to view config files from the umbraco backend)
-            
-            You should add the following lines to the uwbsPaymnet.config file:
-            
-           <provider title="OmniKassa">
-							<MerchantId>#YOUR OmniKassa MerchantId#</MerchantId>      
-							<CurrencyCode>978</CurrencyCode>
-							<normalReturnUrl>http://www.yoursite.com</normalReturnUrl>
-							<KeyVersion>1</KeyVersion>   
-							<TestAmount>56</TestAmount>
-							<Url>https://payment-webinit.omnikassa.rabobank.nl/paymentServlet</Url>
-							<TestUrl>https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet</TestUrl>
-							<ForwardUrl>https://payment-web.omnikassa.rabobank.nl/payment</ForwardUrl>
-							<TestForwardUrl>https://payment-web.simu.omnikassa.rabobank.nl/payment</TestForwardUrl>
-						</provider>  
-         
-            In the uWebshop section, under Payment Providers > Providers you'll create a new Payment Provider Node called "Omnikassa".
-            The "Payment Provider Type" should be "Online Payment Provider"
-            The Node Name should be "Omnikassa"
-            The DLLname is "uWebshop.Payment.Omnikassa.dll".
-            The rest can be set to your own needs.      
+            This package wil install the Omnikassa payment provider for uWebshop
+            This package installs the Omnikassa Provider DLL, alters the PaymentProvider.config and creates the Omnikassa Node in the Payment Providers Section in uWebshop.
             ]]>
 		</readme>
 	</info>

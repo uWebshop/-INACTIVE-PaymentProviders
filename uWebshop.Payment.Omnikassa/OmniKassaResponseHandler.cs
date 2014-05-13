@@ -13,7 +13,7 @@ namespace uWebshop.Payment.Omnikassa
 {
 	public class OmniKassaResponseHandler : OmnikassaPaymentBase, IPaymentResponseHandler
 	{
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
+		public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
 		{
 			var data = HttpContext.Current.Request["Data"];
 			var seal = HttpContext.Current.Request["Seal"];
@@ -35,7 +35,7 @@ namespace uWebshop.Payment.Omnikassa
 
 				Log.Instance.LogDebug("Omnikassa transactionCode: " + transactionCode + " responseCode: " + responseCode);
 				
-				var orderInfo = OrderHelper.GetOrder(transactionCode);
+				orderInfo = OrderHelper.GetOrder(transactionCode);
 
 				Log.Instance.LogDebug("Omnikassa orderInfo: " + orderInfo.OrderNumber);
 
@@ -111,7 +111,7 @@ namespace uWebshop.Payment.Omnikassa
 				throw new Exception("SEAL BROKEN");
 			}
 
-			return null;
+			return orderInfo;
 		}
 
 		private List<KeyValuePair<String, String>> ParseData(String data)

@@ -55,7 +55,7 @@ namespace uWebshop.Payment.Buckaroo
         {
             set
             {
-                _params["brq_amount"] = value.ToString(CultureInfo.InvariantCulture);
+                _params["brq_amount"] = value.ToString(CultureInfo.InvariantCulture).Replace(',','.');
             }
         }
 

@@ -2,7 +2,7 @@
 <link href="/umbraco_client/propertypane/style.css" rel="stylesheet" />
 
 <div class="dashboardWrapper">
-	<h2>PayPal payment provider for uWebshop2</h2>
+	<h2>PayPal payment provider for uWebshop</h2>
 	<img src="/App_Plugins/uWebshop/images/uwebshop32x32.png" alt="uWebshop" class="dashboardIcon" />
 	<p>Use the installer below to install the PayPal Payment Provider in your store.</p>
 	<p>There are some properties to be set on the PayPal node after installation before PayPal will work.</p>
@@ -12,5 +12,3 @@
 	<asp:TextBox runat="server" ID="txtPayPalAccountId"/>
 	<asp:Button runat="server" ID="btnInstall" OnClick="installConfig" Text="Install"/>
 </div>
-
-</div></div>

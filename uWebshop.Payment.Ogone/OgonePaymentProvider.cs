@@ -47,7 +47,7 @@ namespace uWebshop.Payment.Ogone
                         var name = issuer.Element("Name").Value;
                         var code = issuer.Element("Code").Value;
 
-                        var method = string.Format("{0}|{1}", serviceName, code);
+                        var method = string.Format("{0}-{1}", serviceName, code);
 
                         var nameForLogoDictionaryItem = string.Format("{0}LogoId", code.Replace(" ", string.Empty));
 

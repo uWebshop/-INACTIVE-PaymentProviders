@@ -8,7 +8,7 @@ namespace uWebshop.Payment.Ogone
 {
 	public class OgonePaymentResponseHandler : OgonePaymentBase, IPaymentResponseHandler
 	{
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
+		public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
 		{
 			// Ogone POSTS some values
 			var transactionId = HttpContext.Current.Request["TransactionId"];
@@ -17,10 +17,10 @@ namespace uWebshop.Payment.Ogone
 			if (string.IsNullOrEmpty(transactionId))
 			{
 				Log.Instance.LogError("Ogone TransactionId not Found!");
-				return string.Empty;
+			    return null;
 			}
 			
-			var orderInfo = OrderHelper.GetOrder(transactionId);
+			orderInfo = OrderHelper.GetOrder(transactionId);
 
 			Log.Instance.LogDebug("OGONE OrderNumber: " + orderInfo.OrderNumber + " TransactionID: " + transactionId + " Status: " + status);
 
@@ -102,10 +102,10 @@ namespace uWebshop.Payment.Ogone
 
 				orderInfo.Save();
 			}
-
+            
 			HttpContext.Current.Response.Redirect(redirectUrl);
 
-			return string.Empty;
+            return orderInfo;
 		}
 	}
 }

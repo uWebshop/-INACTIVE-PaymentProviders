@@ -21,102 +21,89 @@ namespace uWebshop.Payment
 		}
 
 
-		protected void InstallConfig(object sender, EventArgs e)
-		{
-			var configfile = PaymentConfigHelper.GetPaymentProviderConfig();
+	    protected void InstallConfig(object sender, EventArgs e)
+	    {
+	        var configfile = PaymentConfigHelper.GetPaymentProviderConfigXml();
+	        var configfilePath = PaymentConfigHelper.GetPaymentProviderConfig();
 
-			if (configfile == null)
-			{
-				BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.error, "Error!", "PaymentProviderConfig not found!");
-				return;
-			}
+	        if (configfile == null)
+	        {
+	            BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.error, "Error!",
+	                "PaymentProviderConfig not found!");
+	            return;
+	        }
 
-			var accountId = "#YOUR MERCHANTID#";
-			var securityKey = "#YOUR SECURITYKEY#";
+	        var accountId = "#YOUR MERCHANTID#";
+	        var securityKey = "#YOUR SECURITYKEY#";
 
-			if (!string.IsNullOrEmpty(txtMerchantId.Text))
-			{
-				accountId = txtMerchantId.Text;
-			}
+	        if (!string.IsNullOrEmpty(txtMerchantId.Text))
+	        {
+	            accountId = txtMerchantId.Text;
+	        }
 
-			if (!string.IsNullOrEmpty(txtSecurityKey.Text))
-			{
-				securityKey = txtSecurityKey.Text;
-			}
+	        if (!string.IsNullOrEmpty(txtSecurityKey.Text))
+	        {
+	            securityKey = txtSecurityKey.Text;
+	        }
 
-			var paymentProviderXML = HttpContext.Current.Server.MapPath(configfile);
-
-			if (paymentProviderXML != null)
-			{
-				var paymentProviderXDoc = XDocument.Load(paymentProviderXML);
-
-				if (paymentProviderXDoc.Descendants("provider").Any(x =>
-					{
-						var xAttribute = x.Attribute("title");
-						return xAttribute != null && xAttribute.Value == "Omnikassa";
-					}))
-				{
-					BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.info, "Omnikassa config", "Omnikassa config already created");
-				}
-				else
-				{
-					//<provider title="OmniKassa">
-					//	   <MerchantId>#YOUR OmniKassa MerchantId#</MerchantId>      
-					//	   <CurrencyCode>978</CurrencyCode>
-					//	   <normalReturnUrl>http://www.yoursite.com</normalReturnUrl>
-					//	   <KeyVersion>1</KeyVersion>   
-					//	   <TestAmount>56</TestAmount>
-					//	   <Url>https://payment-webinit.omnikassa.rabobank.nl/paymentServlet</Url>
-					//	   <TestUrl>https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet</TestUrl>  
-					//<ForwardUrl>https://payment-web.omnikassa.rabobank.nl/payment</ForwardUrl>
-					//  <TestForwardUrl>https://payment-web.simu.omnikassa.rabobank.nl/payment</TestForwardUrl>
-					//</provider>
-					//   </provider>  
+	        if (configfile.Descendants("provider").Any(x =>
+	        {
+	            var xAttribute = x.Attribute("title");
+	            return xAttribute != null && xAttribute.Value == "Omnikassa";
+	        }))
+	        {
+	            BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.info, "Omnikassa config",
+	                "Omnikassa config already created");
+	        }
+	        else
+	        {
+	            //<provider title="OmniKassa">
+	            //	   <MerchantId>#YOUR OmniKassa MerchantId#</MerchantId>      
+	            //	   <CurrencyCode>978</CurrencyCode>
+	            //	   <normalReturnUrl>http://www.yoursite.com</normalReturnUrl>
+	            //	   <KeyVersion>1</KeyVersion>   
+	            //	   <TestAmount>56</TestAmount>
+	            //</provider>
+	            //   </provider>  
 
 
-					var paymentNode = new XElement("provider", new XAttribute("title", "Omnikassa"), new XElement("MerchantId", accountId), new XElement("CurrencyCode", "978"), new XElement("normalReturnUrl", HttpContext.Current.Request.Url.Authority), new XElement("KeyVersion", "1"), new XElement("TestAmount", "1000"), new XElement("url", "https://payment-webinit.omnikassa.rabobank.nl/paymentServlet"), new XElement("testURL", "https://payment-webinit.simu.omnikassa.rabobank.nl/paymentServlet"), new XElement("ForwardUrl", "https://payment-webinit.omnikassa.rabobank.nl/payment"), new XElement("TestForwardUrl", "https://payment-webinit.simu.omnikassa.rabobank.nl/payment"));
+	            var paymentNode = new XElement("provider", new XAttribute("title", "Omnikassa"),
+	                new XElement("MerchantId", accountId), new XElement("CurrencyCode", "978"),
+	                new XElement("normalReturnUrl", HttpContext.Current.Request.Url.Authority),
+	                new XElement("KeyVersion", "1"), new XElement("TestAmount", "1000"),
+	                new XElement("SecurityKey", securityKey)
+	                );
 
-					paymentProviderXDoc.Descendants("providers").FirstOrDefault().Add(paymentNode);
+	            configfile.Descendants("providers").First().Add(paymentNode);
 
-					paymentProviderXDoc.Save(paymentProviderXML);
+                var paymentProviderPath = HttpContext.Current.Server.MapPath(configfilePath);
 
-					var dtuwbsPaymentProviderSection = DocumentType.GetByAlias(PaymentProviderSectionContentType.NodeAlias);
+                configfile.Save(paymentProviderPath);
 
-					var author = new User(0);
+	            var dtuwbsPaymentProviderSection = DocumentType.GetByAlias(PaymentProviderSectionContentType.NodeAlias);
 
-					var uwbsPaymentProviderSectionDoc = Document.GetDocumentsOfDocumentType(dtuwbsPaymentProviderSection.Id).FirstOrDefault();
+	            var author = new User(0);
 
-					var dtuwbsPaymentProvider = DocumentType.GetByAlias(PaymentProvider.NodeAlias);
+	            var uwbsPaymentProviderSectionDoc =
+	                Document.GetDocumentsOfDocumentType(dtuwbsPaymentProviderSection.Id).FirstOrDefault();
 
-					if (uwbsPaymentProviderSectionDoc != null)
-					{
-						var providerDoc = Document.MakeNew("Omnikassa", dtuwbsPaymentProvider, author, uwbsPaymentProviderSectionDoc.Id);
-						providerDoc.SetProperty("title", "Omnikassa");
-						providerDoc.SetProperty("description", "Omnikassa Payment Provider for uWebshop");
+	            var dtuwbsPaymentProvider = DocumentType.GetByAlias(PaymentProvider.NodeAlias);
 
-						providerDoc.SetProperty("type", PaymentProviderType.OnlinePayment.ToString());
-						providerDoc.SetProperty("dllName", "uWebshop.Payment.Omnikassa");
+	            if (uwbsPaymentProviderSectionDoc != null)
+	            {
+	                var providerDoc = Document.MakeNew("Omnikassa", dtuwbsPaymentProvider, author,
+	                    uwbsPaymentProviderSectionDoc.Id);
+	                providerDoc.SetProperty("title", "Omnikassa");
+	                providerDoc.SetProperty("description", "Omnikassa Payment Provider for uWebshop");
 
-						providerDoc.Save();
+	                providerDoc.SetProperty("type", PaymentProviderType.OnlinePayment.ToString());
 
-						BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Omnikassa Installed!", "Omnikassa config added and nodes created");
-					}
-				}
-			}
+	                providerDoc.Save();
 
-			var webConfigValue = ConfigurationManager.AppSettings["SecurityKey"];
-
-			if (string.IsNullOrEmpty(webConfigValue))
-			{
-				try
-				{
-					ConfigurationManager.AppSettings.Add("SecurityKey", securityKey);
-				}
-				catch
-				{
-					BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.error, "Write to Web.config failed!", "Add: add key='SecurityKey' value='" + securityKey + "' to web.config AppSettings");
-				}
-			}
-		}
+	                BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Omnikassa Installed!",
+	                    "Omnikassa config added and nodes created");
+	            }
+	        }
+	    }
 	}
 }

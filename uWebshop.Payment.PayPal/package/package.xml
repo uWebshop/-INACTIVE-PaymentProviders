@@ -18,31 +18,10 @@
 			<website>http://www.uWebshop.com</website>
 		</author>
 		<readme>
-			<![CDATA[PayPal Payment Provider Provider for uWebshop2.1
+			<![CDATA[PayPal Payment Provider Provider for uWebshop
             
-            This package wil install the PayPal payment provider for uWebshop 2.1
-            It installs the PayPal Provider DLL and creates the PayPal Node in the Payment Providers Section.
-            
-            
-            Manual Installation guide:
-                      
-            In the root of your Umbraco site you'll find the "config" folder. Inside this folder is a "uWebshop" folder.
-            There you will find the "uwbsPayment.config" file. 
-            (We advise the config folder package to be able to view config files from the umbraco backend)
-            
-            You should add the following lines to the PaymentProviders.config file:
-            
-           <provider title="PayPal">
-              <accountId>info@uwebshop.com</accountId>
-              <url>https://www.paypal.com/cgi-bin/webscr</url>
-              <testURL>https://www.sandbox.paypal.com/us/cgi-bin/webscr</testURL>
-			</provider> 
-                          
-            In the uWebshop section, under Payment Providers > Providers you'll create a new Payment Provider Node called "PayPal".
-            The "Payment Provider Type" should be "Online Payment Provider"
-            The Node Name" should be "PayPal"
-            The DLLname is "uWebshop.Payment.PayPal.dll".
-            The rest can be set to your own needs.
+            This package wil install the PayPal payment provider for uWebshop
+            This package installs the PayPal Provider DLL, alters the PaymentProvider.config and creates the PayPal Node in the Payment Providers Section in uWebshop.
             ]]>
 		</readme>
 	</info>

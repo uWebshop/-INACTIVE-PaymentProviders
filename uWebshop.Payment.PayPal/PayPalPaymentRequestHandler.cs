@@ -33,14 +33,25 @@ namespace uWebshop.Payment.PayPal
 			#region config helper
 
 			var accountId = paymentProvider.GetSetting("AccountId");
-			
-			var testUrl = paymentProvider.GetSetting("testUrl");
-			
-			var liveUrl = paymentProvider.GetSetting("Url");
 
+            var liveUrl = "https://www.paypal.com/cgi-bin/webscr";
+            var testUrl = "https://www.sandbox.paypal.com/us/cgi-bin/webscr";
+
+            var configLiveUrl = paymentProvider.GetSetting("Url");
+            var configTestUrl = paymentProvider.GetSetting("testUrl");
+            
+            if (!string.IsNullOrEmpty(configLiveUrl))
+            {
+                liveUrl = configLiveUrl;
+            }
+            if (!string.IsNullOrEmpty(configTestUrl))
+            {
+                testUrl = configTestUrl;
+            }
+			
 			#endregion
 
-			var uniqueId = orderInfo.OrderNumber + "x" + DateTime.Now.ToString("hhmmss");
+			var trasactionId = orderInfo.OrderNumber + "x" + DateTime.Now.ToString("hhmmss");
 
 
 			var request = new PaymentRequest();
@@ -82,12 +93,12 @@ namespace uWebshop.Payment.PayPal
 			// Sent GUID for identification to PayPal
 			// PayPal will return custom value to validate order
 
-			request.Parameters.Add("custom", uniqueId);
+			request.Parameters.Add("custom", trasactionId);
 
 			// check if provider is in testmode to send request to right URL
 			request.PaymentUrlBase = paymentProvider.TestMode ? testUrl : liveUrl;
 
-			PaymentProviderHelper.SetTransactionId(orderInfo, uniqueId);
+			PaymentProviderHelper.SetTransactionId(orderInfo, trasactionId);
 
 			orderInfo.PaymentInfo.Url = request.PaymentUrl;
 			orderInfo.PaymentInfo.Parameters = request.ParametersAsString;

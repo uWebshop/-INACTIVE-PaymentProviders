@@ -34,14 +34,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="businesslogic">
-      <HintPath>..\Binary Dependencies\businesslogic.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies\businesslogic.dll</HintPath>
     </Reference>
     <Reference Include="cms">
-      <HintPath>..\Binary Dependencies\cms.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies\cms.dll</HintPath>
     </Reference>
-    <Reference Include="interfaces, Version=1.0.4024.5662, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Binary Dependencies\interfaces.dll</HintPath>
+    <Reference Include="interfaces">
+      <HintPath>..\..\Binary Dependencies\interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -49,8 +48,9 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
-    <Reference Include="umbraco">
-      <HintPath>..\Binary Dependencies\umbraco.dll</HintPath>
+    <Reference Include="umbraco, Version=1.0.4902.15217, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Binary Dependencies\umbraco.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -64,14 +64,12 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="uWebshopPayPalInstaller.ascx.designer.cs">
-      <DependentUpon>uWebshopPayPalInstaller.ascx</DependentUpon>
+      <DependentUpon>uWebshopPayPalInstaller.ascx.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="package.xml" />
-    <Content Include="uWebshopPayPalInstaller.ascx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
+    <Content Include="uWebshopPayPalInstaller.ascx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
@@ -96,8 +94,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 3.5.113
-
+    <PostBuildEvent>
 XCOPY "$(ProjectDir)$(OutDir)$(TargetFileName)" "$(ProjectDir)package\" /Y /R
 XCOPY "$(ProjectDir)package.xml" "$(ProjectDir)package\" /Y /R
 XCOPY "$(ProjectDir)uWebshopPayPalInstaller.ascx" "$(ProjectDir)package\" /Y /R</PostBuildEvent>

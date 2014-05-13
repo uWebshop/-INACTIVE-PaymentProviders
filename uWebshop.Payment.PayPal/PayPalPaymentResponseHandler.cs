@@ -20,13 +20,25 @@ namespace uWebshop.Payment.PayPal
 		/// <summary>
 		/// Handles the response
 		/// </summary>
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
+		public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
 		{	
 			var payPalTestMode = paymentProvider != null && paymentProvider.TestMode;
 
-			var testUrl = paymentProvider.GetSetting("testUrl");
+            var liveUrl = "https://www.paypal.com/cgi-bin/webscr";
+            var testUrl = "https://www.sandbox.paypal.com/us/cgi-bin/webscr";
 
-			var liveUrl = paymentProvider.GetSetting("Url");
+            var configLiveUrl = paymentProvider.GetSetting("Url");
+            var configTestUrl = paymentProvider.GetSetting("testUrl");
+
+            if (!string.IsNullOrEmpty(configLiveUrl))
+            {
+                liveUrl = configLiveUrl;
+            }
+            if (!string.IsNullOrEmpty(configTestUrl))
+            {
+                testUrl = configTestUrl;
+            }
+			
 
 			var req = payPalTestMode ? (HttpWebRequest)WebRequest.Create(testUrl) : (HttpWebRequest)WebRequest.Create(liveUrl);
 
@@ -94,6 +106,8 @@ namespace uWebshop.Payment.PayPal
 									break;
 							}
 							order.Save();
+
+						    orderInfo = order;
 						}
 					}
 					break;
@@ -101,7 +115,7 @@ namespace uWebshop.Payment.PayPal
 					break;
 			}
 
-			return null;
+            return orderInfo;
 		}
 	}
 }
