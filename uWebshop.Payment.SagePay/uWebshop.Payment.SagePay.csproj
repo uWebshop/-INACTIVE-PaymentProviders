@@ -31,24 +31,32 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="businesslogic">
-      <HintPath>..\Binary Dependencies\businesslogic.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6.1\businesslogic.dll</HintPath>
     </Reference>
     <Reference Include="cms">
-      <HintPath>..\Binary Dependencies\cms.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6.1\cms.dll</HintPath>
     </Reference>
     <Reference Include="interfaces">
-      <HintPath>..\Binary Dependencies\interfaces.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies\interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="SagePay.IntegrationKit.DotNet">
+      <HintPath>Binary Dependencies\SagePay.IntegrationKit.DotNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="umbraco">
-      <HintPath>..\Binary Dependencies\umbraco.dll</HintPath>
+      <HintPath>..\..\Binary Dependencies umbraco6.1\umbraco.dll</HintPath>
+    </Reference>
+    <Reference Include="Umbraco.Core">
+      <HintPath>..\..\Binary Dependencies umbraco6.1\Umbraco.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SagePayPaymentBase.cs" />
     <Compile Include="SagePayPaymentResponseHandler.cs" />
     <Compile Include="SagePayPaymentProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -72,10 +80,6 @@
       <Project>{61eef91b-22ed-48f0-83eb-cdc7431c5bde}</Project>
       <Name>uWebshop.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\uWebshop.DataAccess\uWebshop.DataAccess.csproj">
-      <Project>{3cf8ee6f-506f-4d47-8368-d6c6b9fa42e3}</Project>
-      <Name>uWebshop.DataAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
       <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
       <Name>uWebshop.Domain</Name>
@@ -83,9 +87,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 3.5.113
-
-XCOPY "$(ProjectDir)$(OutDir)$(TargetFileName)" "$(ProjectDir)package\" /Y /R
+    <PostBuildEvent>XCOPY "$(ProjectDir)$(OutDir)$(TargetFileName)" "$(ProjectDir)package\" /Y /R
 XCOPY "$(ProjectDir)package.xml" "$(ProjectDir)package\" /Y /R
 XCOPY "$(ProjectDir)uWebshopSagePayInstaller.ascx" "$(ProjectDir)package\" /Y /R</PostBuildEvent>
   </PropertyGroup>

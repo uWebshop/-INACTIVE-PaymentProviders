@@ -3,13 +3,13 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Xml.Linq;
-using uWebshop.Common;
-using uWebshop.Domain;
-using uWebshop.Domain.ContentTypes;
 using umbraco;
 using umbraco.BasePages;
 using umbraco.BusinessLogic;
 using umbraco.cms.businesslogic.web;
+using uWebshop.Common;
+using uWebshop.Domain;
+using uWebshop.Domain.ContentTypes;
 
 namespace uWebshop.Payment
 {
@@ -60,7 +60,7 @@ namespace uWebshop.Payment
 					//  </provider> 
 
 
-					var paymentNode = new XElement("provider", new XAttribute("title", "SagePay"), new XElement("VendorName", vendorName), new XElement("DirectUrl", "https://live.sagepay.com/Simulator/VSPDirectGateway.asp"), new XElement("DirectTestURL", "https://test.sagepay.com/Simulator/VSPDirectGateway.asp"));
+					var paymentNode = new XElement("provider", new XAttribute("title", "SagePay"), new XElement("VendorName", vendorName));
 
 					paymentProviderXDoc.Descendants("providers").FirstOrDefault().Add(paymentNode);
 
@@ -81,7 +81,6 @@ namespace uWebshop.Payment
 						providerDoc.SetProperty("description", "SagePay Payment Provider for uWebshop");
 
 						providerDoc.SetProperty("type", PaymentProviderType.OnlinePayment.ToString());
-						providerDoc.SetProperty("dllName", "uWebshop.Payment.SagePay");
 
 						providerDoc.Save();
 

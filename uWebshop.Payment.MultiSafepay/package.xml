@@ -18,35 +18,10 @@
 			<website>http://www.uWebshop.com</website>
 		</author>
 		<readme>
-			<![CDATA[MultiSafePay Payment Provider Provider for uWebshop2.0
+			<![CDATA[MultiSafePay Payment Provider Provider for uWebshop
             
-            This package wil install the MultiSafePay payment provider for uWebshop 2.0.
-            It installs the MultiSafePay Provider DLL and creates the MultiSafePay Node in the Payment Providers Section.
-            
-                        
-            Manual Installation guide:
-            
-            In the root of your Umbraco site you'll find the "config" folder. Inside this folder is a "uWebshop" folder.
-            There you will find the "uwbsPayment.config" file. 
-            (We advise the config folder package to be able to view config files from the umbraco backend)
-            
-            You should add the following lines to the uwbsPaymnet.config file:
-                                  
-            <provider title="MultiSafePay">
-                <accountId>#YOUR MULTISAFEPAY ACCOUNT ID#</accountId>
-                <siteId>#YOUR MULTISAFEPAY SITE ID#</siteId>
-                <siteSecureId>#YOUR MULTISAFEPAY SECURE SITE ID#</siteSecureId>
-                <url>https://api.multisafepay.com/ewx/</url>
-                <testURL>https://testapi.multisafepay.com/ewx/</testURL>
-            </provider>   
-            
-            (this snipped includes the testmode set to true!)
-    
-            In the uWebshop section, under Payment Providers > Providers you'll create a new Payment Provider Node called "MultiSafePay".
-            The "Payment Provider Type" should be "Online Payment Provider"
-            The NodeName should be "MultiSafePay"
-            The DLLname is "uWebshop.Payment.MultiSafePay.dll".
-            The rest can be set to your own needs.      
+            This package wil install the MultiSafePay payment provider for uWebshop
+            This package installs the MultiSafePay Provider DLL, alters the PaymentProvider.config and creates the MultiSafePay Node in the Payment Providers Section in uWebshop.   
             ]]>
 		</readme>
 	</info>

@@ -20,95 +20,128 @@ namespace uWebshop.Payment
 		}
 
 
-		protected void InstallOgoneConfig(object sender, EventArgs e)
-		{
-			var configfile = PaymentConfigHelper.GetPaymentProviderConfig();
+	    protected void InstallOgoneConfig(object sender, EventArgs e)
+	    {
+	        var configfile = PaymentConfigHelper.GetPaymentProviderConfigXml();
+	        var configfilePath = PaymentConfigHelper.GetPaymentProviderConfig();
 
-			if (configfile == null)
-			{
-				BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.error, "Error!", "PaymentProviderConfig not found!");
-				return;
-			}
+	        if (configfile == null)
+	        {
+	            BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.error, "Error!",
+	                "PaymentProviderConfig not found!");
+	            return;
+	        }
 
-			var ogoneAccountId = "#YOUR OGONE PSPID#";
-			var ogoneSHASignature = "#YOUR SHA SIGNATURE#";
+	        var ogoneAccountId = "#YOUR OGONE PSPID#";
+	        var ogoneSHASignature = "#YOUR SHA SIGNATURE#";
 
-			if (!string.IsNullOrEmpty(txtOgonePSPID.Text))
-			{
-				ogoneAccountId = txtOgonePSPID.Text;
-			}
+	        if (!string.IsNullOrEmpty(txtOgonePSPID.Text))
+	        {
+	            ogoneAccountId = txtOgonePSPID.Text;
+	        }
 
-			if (!string.IsNullOrEmpty(txtSHA.Text))
-			{
-				ogoneSHASignature = txtSHA.Text;
-			}
+	        if (!string.IsNullOrEmpty(txtSHA.Text))
+	        {
+	            ogoneSHASignature = txtSHA.Text;
+	        }
 
-			var paymentProviderXML = HttpContext.Current.Server.MapPath(configfile);
-
-			if (paymentProviderXML != null)
-			{
-				var paymentProviderXDoc = XDocument.Load(paymentProviderXML);
-
-				if (paymentProviderXDoc.Descendants("provider").Any(x =>
-					{
-						var xAttribute = x.Attribute("title");
-						return xAttribute != null && xAttribute.Value == "Ogone";
-					}))
-				{
-					BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.info, "Ogone config", "Ogone config already created");
-				}
-				else
-				{
-					//         <provider title="Ogone">
-					//  <PSPID>#YOUR PSID#</PSPID>
-					//  <SecureHashAlgorithm>SHA256</SecureHashAlgorithm>
-					//  <SHAInSignature>#YOUR SHA SIGNATURE</SHAInSignature>
-					//      <url>https://secure.ogone.com/ncol/prod/orderstandard.asp</url>
-					//  <testURL>https://secure.ogone.com/ncol/test/orderstandard.asp</testURL>
-					//</provider> 
+            if (configfile.Descendants("provider").Any(x =>
+	        {
+	            var xAttribute = x.Attribute("title");
+	            return xAttribute != null && xAttribute.Value == "Ogone";
+	        }))
+	        {
+	            BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.info, "Ogone config",
+	                "Ogone config already created");
+	        }
+	        else
+	        {
+	            //         <provider title="Ogone">
+	            //  <PSPID>#YOUR PSID#</PSPID>
+	            //  <SecureHashAlgorithm>SHA256</SecureHashAlgorithm>
+	            //  <SHAInSignature>#YOUR SHA SIGNATURE</SHAInSignature>
+	            //      <url>https://secure.ogone.com/ncol/prod/orderstandard.asp</url>
+	            //  <testURL>https://secure.ogone.com/ncol/test/orderstandard.asp</testURL>
+	            //</provider> 
 
 
-					var oGoneConfig = new XElement("provider", new XAttribute("title", "Ogone"), new XElement("PSPID", ogoneAccountId), new XElement("SecureHashAlgorithm", "SHA256"), new XElement("SHAInSignature", ogoneSHASignature));
+	            var oGoneConfig = new XElement("provider", new XAttribute("title", "Ogone"),
+	                new XElement("PSPID", ogoneAccountId), new XElement("SecureHashAlgorithm", "SHA256"),
+	                new XElement("SHAInSignature", ogoneSHASignature));
 
-					paymentProviderXDoc.Descendants("providers").FirstOrDefault().Add(oGoneConfig);
+                configfile.Descendants("providers").First().Add(oGoneConfig);
 
-					paymentProviderXDoc.Save(paymentProviderXML);
+                var servicesNode = new XElement("Services");
+                oGoneConfig.Add(servicesNode);
 
-					var dtuwbsPaymentProviderSection = DocumentType.GetByAlias(PaymentProviderSectionContentType.NodeAlias);
+                #region creditcards
+                var serviceCreditCardNode = new XElement("Service", new XAttribute("name", "CreditCard"));
+                servicesNode.Add(serviceCreditCardNode);
 
-					var author = new User(0);
+                var issuersNode = new XElement("Issuers");
+                serviceCreditCardNode.Add(issuersNode);
 
-					var uwbsPaymentProviderSectionDoc = Document.GetDocumentsOfDocumentType(dtuwbsPaymentProviderSection.Id).FirstOrDefault();
+                var issuerNode = new XElement("Issuer");
+                issuersNode.Add(issuerNode);
 
-					var dtuwbsPaymentProvider = DocumentType.GetByAlias(PaymentProvider.NodeAlias);
+                var codeNodeMasterCard = new XElement("Code", "MasterCard");
+                issuerNode.Add(codeNodeMasterCard);
 
-					if (uwbsPaymentProviderSectionDoc != null)
-					{
-						var providerDoc = Document.MakeNew("Ogone", dtuwbsPaymentProvider, author, uwbsPaymentProviderSectionDoc.Id);
-						providerDoc.SetProperty("title", "Ogone");
-						providerDoc.SetProperty("description", "Ogone Payment Provider for uWebshop");
-                        providerDoc.SetProperty("type", PaymentProviderType.OnlinePayment.ToString());
-						providerDoc.Save();
+                var nameNodeMasterCard = new XElement("Name", "MasterCard");
+                issuerNode.Add(nameNodeMasterCard);
 
-                        //var dtuwbsPaymentProviderMethod = DocumentType.GetByAlias(PaymentProviderMethod.NodeAlias);
+                var issuer2Node = new XElement("Issuer");
+                issuersNode.Add(issuer2Node);
 
-                        //var methodDocMasterCard = Document.MakeNew("CreditCardMasterCard", dtuwbsPaymentProviderMethod, author, providerDoc.Id);
-                        //methodDocMasterCard.SetProperty("title", "CreditCard|MasterCard");
-                        //methodDocMasterCard.SetProperty("description", "Mastercard Payment Method using Ogone");
+                var codeNodeVisa = new XElement("Code", "VISA");
+                issuer2Node.Add(codeNodeVisa);
 
-                        //methodDocMasterCard.Save();
+                var nameNodeVisa = new XElement("Name", "VISA");
+                issuer2Node.Add(nameNodeVisa);
+                #endregion
 
-                        //var methodDocVisa = Document.MakeNew("CreditCardVisa", dtuwbsPaymentProviderMethod, author, providerDoc.Id);
-                        //methodDocVisa.SetProperty("title", "CreditCard|Visa");
-                        //methodDocVisa.SetProperty("description", "Visa Payment Method using Ogone");
+                #region ideal
+                var serviceiDealNode = new XElement("Service", new XAttribute("name", "iDEAL"));
+                servicesNode.Add(serviceiDealNode);
 
-                        //methodDocVisa.Save();
+                var issuersiDealNode = new XElement("Issuers");
+                serviceiDealNode.Add(issuersiDealNode);
 
+                var issueriDealNode = new XElement("Issuer");
+                issuersiDealNode.Add(issueriDealNode);
 
-						BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Ogone Installed!", "Ogone config added and nodes created");
-					}
-				}
-			}
-		}
+                var codeNodeiDeal = new XElement("Code", "iDEAL");
+                issueriDealNode.Add(codeNodeiDeal);
+
+                var nameNodeiDeal = new XElement("Name", "iDeal");
+                issueriDealNode.Add(nameNodeiDeal);
+                #endregion
+
+                var paymentProviderPath = HttpContext.Current.Server.MapPath(configfilePath);
+                configfile.Save(paymentProviderPath);
+
+	            var dtuwbsPaymentProviderSection = DocumentType.GetByAlias(PaymentProviderSectionContentType.NodeAlias);
+
+	            var author = new User(0);
+
+	            var uwbsPaymentProviderSectionDoc =
+	                Document.GetDocumentsOfDocumentType(dtuwbsPaymentProviderSection.Id).FirstOrDefault();
+
+	            var dtuwbsPaymentProvider = DocumentType.GetByAlias(PaymentProvider.NodeAlias);
+
+	            if (uwbsPaymentProviderSectionDoc != null)
+	            {
+	                var providerDoc = Document.MakeNew("Ogone", dtuwbsPaymentProvider, author,
+	                    uwbsPaymentProviderSectionDoc.Id);
+	                providerDoc.SetProperty("title", "Ogone");
+	                providerDoc.SetProperty("description", "Ogone Payment Provider for uWebshop");
+	                providerDoc.SetProperty("type", PaymentProviderType.OnlinePayment.ToString());
+	                providerDoc.Save();
+
+	                BasePage.Current.ClientTools.ShowSpeechBubble(BasePage.speechBubbleIcon.success, "Ogone Installed!",
+	                    "Ogone config added and nodes created");
+	            }
+	        }
+	    }
 	}
 }

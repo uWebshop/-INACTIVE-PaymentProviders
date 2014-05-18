@@ -1,131 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Web;
+﻿using System.Web;
 using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using umbraco;
-using umbraco.BusinessLogic;
-using umbraco.NodeFactory;
 
 namespace uWebshop.Payment.SagePay
 {
-	public class SagePayPaymentResponseHandler : IPaymentResponseHandler
-	{
-		public string GetName()
-		{
-			return "SagePay";
-		}
+    public class SagePayPaymentResponseHandler : IPaymentResponseHandler
+    {
+        public string GetName()
+        {
+            return "SagePay";
+        }
 
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
-		{
-			// PayPal POSTS some values
-			string paymentStatus = library.Request("Status");
+        public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
+        {
+         
+            // Check for match
+            if (orderInfo != null && orderInfo.Paid == false)
+            {
+                var status = orderInfo.PaymentInfo.Parameters.Split('&')[0];
+                var message = orderInfo.PaymentInfo.Parameters.Split('&')[1];
 
-			// Get identifier created with the RequestHandler
-			string transactionId = library.Request("VPSTxId");
+                // Get statusses from payment provider Response
+                switch (status.ToUpperInvariant())
+                {
+                    case "OK":
+                        orderInfo.Paid = true;
+                        orderInfo.Status = OrderStatus.ReadyForDispatch;
 
-			// Match  identifier to order
-			var orderInfo = OrderHelper.GetOrderInfo(transactionId);
+                        break;
+                    case "MALFORMED":
+                        orderInfo.Paid = false;
+                        orderInfo.Status = OrderStatus.PaymentFailed;
+                        orderInfo.PaymentInfo.ErrorMessage = message;
+                        Log.Instance.LogError("SagePay Payment Error: " + message);
 
-			// Check for match
-			if (orderInfo != null && orderInfo.Paid == false)
-			{
-				// Get statusses from payment provider Response
-				switch (paymentStatus)
-				{
-					case "OK":
-						orderInfo.Paid = true;
-						orderInfo.Status = OrderStatus.ReadyForDispatch;
-						CreateAcknowlegeReceipt(orderInfo, "OK", "");
+                        break;
+                    case "INVALID":
+                        orderInfo.Paid = false;
+                        orderInfo.Status = OrderStatus.PaymentFailed;
+                        orderInfo.PaymentInfo.ErrorMessage = message;
+                        Log.Instance.LogError("SagePay Payment Error: " + message);
 
-						break;
-					case "MALFORMED":
-						orderInfo.Paid = false;
-						orderInfo.Status = OrderStatus.PaymentFailed;
-						orderInfo.PaymentInfo.ErrorMessage = library.Request("StatusDetail");
+                        break;
+                    case "ERROR":
+                        orderInfo.Paid = false;
+                        orderInfo.Status = OrderStatus.PaymentFailed;
+                        orderInfo.PaymentInfo.ErrorMessage = message;
+                        Log.Instance.LogError("SagePay Payment Error: " + message);
 
-						CreateAcknowlegeReceipt(orderInfo, "INVALID", "Malformed");
+                        break;
+                }
 
-						break;
-					case "INVALID":
-						orderInfo.Paid = false;
-						orderInfo.Status = OrderStatus.PaymentFailed;
-						orderInfo.PaymentInfo.ErrorMessage = library.Request("StatusDetail");
+                orderInfo.Save();
+            }
 
-						CreateAcknowlegeReceipt(orderInfo, "INVALID", "");
+            return orderInfo;
+        }
 
-						break;
-					case "ERROR":
-						orderInfo.Paid = false;
-						orderInfo.Status = OrderStatus.PaymentFailed;
-						orderInfo.PaymentInfo.ErrorMessage = library.Request("StatusDetail");
+        #region acknowledge receipt
 
-						CreateAcknowlegeReceipt(orderInfo, "ERROR", "");
+        //public PaymentRequest CreateAcknowlegeReceipt(OrderInfo orderInfo, string status, string errorDetails)
+        //{
+        //    var response = new PaymentRequest();
+        //    var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
+            
+        //    var returnUrl = paymentProvider.SuccessUrl();
+        //    var cancelUrl = paymentProvider.ErrorUrl();
 
-						break;
-				}
+        //    HttpContext.Current.Response.Clear();
+        //    HttpContext.Current.Response.ContentType = "text/plain";
+        //    HttpContext.Current.Response.Output.WriteLine("Status=" + status);
+        //    // STATUS CAN BE:
+        //    // - OK
+        //    // - INVALID
+        //    // - ERROR
+        //    HttpContext.Current.Response.Output.WriteLine("RedirectURL={0}", status == "OK" ? returnUrl : cancelUrl);
 
-				orderInfo.Save();
-			}
+        //    HttpContext.Current.Response.Output.WriteLine("StatusDetail=" + errorDetails);
+        //    return response;
+        //}
 
-			return null;
-		}
-
-		#region acknowledge receipt
-
-		public PaymentRequest CreateAcknowlegeReceipt(OrderInfo orderInfo, string status, string errorDetails)
-		{
-			var response = new PaymentRequest();
-
-			var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
-			var helper = new PaymentConfigHelper(paymentProvider);
-
-			#region build urls
-
-			var currentNodeId = Node.GetCurrent().Id;
-			var baseUrl = PaymentProviderHelper.GenerateBaseUrl(currentNodeId);
-
-			var successNodeId = 0;
-			int.TryParse(paymentProvider.SuccesNodeId, out successNodeId);
-
-			var returnUrl = baseUrl;
-
-			if (successNodeId != 0)
-			{
-				returnUrl = string.Format("{0}{1}", baseUrl, library.NiceUrl(successNodeId));
-			}
-
-			var errorNodeId = 0;
-			int.TryParse(paymentProvider.ErrorNodeId, out errorNodeId);
-
-			var cancelUrl = baseUrl;
-
-			cancelUrl = string.Format("{0}{1}", baseUrl, library.NiceUrl(int.Parse(paymentProvider.ErrorNodeId)));
-
-			#endregion
-
-			HttpContext.Current.Response.Clear();
-			HttpContext.Current.Response.ContentType = "text/plain";
-			HttpContext.Current.Response.Output.WriteLine("Status=" + status);
-			// STATUS CAN BE:
-			// - OK
-			// - INVALID
-			// - ERROR
-			HttpContext.Current.Response.Output.WriteLine("RedirectURL={0}", status == "OK" ? returnUrl : cancelUrl);
-
-			HttpContext.Current.Response.Output.WriteLine("StatusDetail=" + errorDetails);
-			return response;
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

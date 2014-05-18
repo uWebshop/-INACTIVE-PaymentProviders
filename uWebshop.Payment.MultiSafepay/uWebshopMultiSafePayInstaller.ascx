@@ -3,7 +3,7 @@
 <link href="/umbraco_client/propertypane/style.css" rel="stylesheet" />
 
 <div class="dashboardWrapper">
-	<h2>MultiSafepay payment provider for uWebshop2</h2>
+	<h2>MultiSafepay payment provider for uWebshop</h2>
 	<img src="/App_Plugins/uWebshop/images/uwebshop32x32.png" alt="uWebshop" class="dashboardIcon" />
 	<p>Use the installer below to install the MultiSafepay Payment Provider in your store.</p>
 	<p>There are some properties to be set on the MultiSafepay node after installation before MultiSafepay will work.</p>
@@ -17,5 +17,3 @@
 	<asp:TextBox runat="server" ID="txtSecureSiteId"/>
 	<asp:Button runat="server" ID="btnInstall" OnClick="InstallConfig" Text="Install"/>
 </div>
-
-</div></div>

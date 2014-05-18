@@ -3,13 +3,13 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Xml.Linq;
-using uWebshop.Common;
-using uWebshop.Domain;
-using uWebshop.Domain.ContentTypes;
 using umbraco;
 using umbraco.BasePages;
 using umbraco.BusinessLogic;
 using umbraco.cms.businesslogic.web;
+using uWebshop.Common;
+using uWebshop.Domain;
+using uWebshop.Domain.ContentTypes;
 
 namespace uWebshop.Payment
 {

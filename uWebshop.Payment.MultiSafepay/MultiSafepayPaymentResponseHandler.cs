@@ -16,7 +16,7 @@ namespace uWebshop.Payment.MultiSafePay
 	{
 		#region IPaymentResponseHandler Members
 
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
+		public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
 		{
 			var transactionId = HttpContext.Current.Request["transactionid"];
 
@@ -26,7 +26,7 @@ namespace uWebshop.Payment.MultiSafePay
 				return null;
 			}
 
-			var orderInfo = OrderHelper.GetOrder(transactionId);
+			orderInfo = OrderHelper.GetOrder(transactionId);
 
 			if (orderInfo.Paid != false)
 			{
@@ -113,7 +113,7 @@ namespace uWebshop.Payment.MultiSafePay
 				Log.Instance.LogError("MultiSafePayPaymentResponseHandler.HandlePaymentResponse: " + ex);
 			}
 
-			return null;
+			return orderInfo;
 		}
 
 		#endregion

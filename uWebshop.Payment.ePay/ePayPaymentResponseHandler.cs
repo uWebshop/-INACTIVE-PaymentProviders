@@ -8,7 +8,7 @@ namespace uWebshop.Payment.ePay
 {
 	public class ePayPaymentResponseHandler : ePayPaymentBase, IPaymentResponseHandler
 	{
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
+        public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo order)
 		{
 			var orderId = HttpContext.Current.Request.QueryString["orderid"];
 
@@ -17,7 +17,7 @@ namespace uWebshop.Payment.ePay
 				return null;
 			}
 		
-			var order = OrderHelper.GetOrder(orderId);
+			order = OrderHelper.GetOrder(orderId);
 			
 			var localizedPaymentProvider = PaymentProvider.GetPaymentProvider(order.PaymentInfo.Id, order.StoreInfo.Alias);
 
@@ -43,7 +43,8 @@ namespace uWebshop.Payment.ePay
 			}
 			
 			HttpContext.Current.Response.Redirect(redirectUrl);
-			return string.Empty;
+
+            return order;
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace uWebshop.Payment.Mollie
 {
 	public class MolliePaymentResponseHandler : MolliePaymentBase, IPaymentResponseHandler
 	{
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
+		public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
 		{
 			try
 			{
@@ -21,21 +21,21 @@ namespace uWebshop.Payment.Mollie
 				if (string.IsNullOrEmpty(transactionId))
 				{
 					Log.Instance.LogError("Mollie: TransactionId IsNullOrEmpty");
-					return string.Empty;
+				    return null;
 				}
 
-				var orderInfo = OrderHelper.GetOrder(transactionId);
+				orderInfo = OrderHelper.GetOrder(transactionId);
 
 				if (orderInfo == null)
 				{
 					Log.Instance.LogError("Mollie: Order Not Found For TransactionId: " + transactionId);
-					return string.Empty;
+                    return null;
 				}
 				
 				if (orderInfo.Paid != false)
 				{
 					Log.Instance.LogDebug("Mollie: Order already paid! TransactionId: " + transactionId);
-					return string.Empty;
+                    return null;
 				}
 				
 				var partnerId = paymentProvider.GetSetting("PartnerId");
@@ -56,7 +56,7 @@ namespace uWebshop.Payment.Mollie
 
 					if (orderInfo.Status == OrderStatus.ReadyForDispatch)
 					{
-						return string.Empty;
+                        return null;
 					}
 					orderInfo.Paid = false;
 					orderInfo.Status = OrderStatus.PaymentFailed;

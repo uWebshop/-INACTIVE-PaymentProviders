@@ -33,17 +33,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="businesslogic, Version=1.0.3827.19791, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Binary Dependencies\businesslogic.dll</HintPath>
+    <Reference Include="businesslogic">
+      <HintPath>..\..\Binary Dependencies\businesslogic.dll</HintPath>
     </Reference>
-    <Reference Include="cms, Version=1.0.3827.19793, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Binary Dependencies\cms.dll</HintPath>
+    <Reference Include="cms">
+      <HintPath>..\..\Binary Dependencies\cms.dll</HintPath>
     </Reference>
-    <Reference Include="interfaces, Version=1.0.4024.5662, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Binary Dependencies\interfaces.dll</HintPath>
+    <Reference Include="interfaces">
+      <HintPath>..\..\Binary Dependencies\interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Mollie.iDEAL">
       <HintPath>..\Binary Dependencies\Mollie.iDEAL.dll</HintPath>
@@ -53,9 +50,8 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
-    <Reference Include="umbraco, Version=1.0.3827.19799, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Binary Dependencies\umbraco.dll</HintPath>
+    <Reference Include="umbraco">
+      <HintPath>..\..\Binary Dependencies\umbraco.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
