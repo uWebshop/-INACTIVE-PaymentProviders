@@ -19,3 +19,6 @@ uWebshop.Payment.Borgun/obj/
 uWebshop.Payment.Omnikassa/package/
 uWebshop.Payment.PayPal/package/
 uWebshop.Payment.SagePay/obj/
+uWebshop.Payment.SagePay/bin/
+uWebshop.Payment.SagePay/package/package.xml
+uWebshop.Payment.SagePay/package/uWebshopSagePayInstaller.ascx
