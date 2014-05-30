@@ -10,6 +10,7 @@ using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 using umbraco;
 using umbraco.BusinessLogic;
+using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Payment.Sisow
 {
@@ -25,17 +26,29 @@ namespace uWebshop.Payment.Sisow
 		{
 			var paymentMethods = new List<PaymentProviderMethod>();
 			var paymentProvider = PaymentProvider.GetPaymentProvider(id);
+            
+			var directoryLiveUrl = "https://www.sisow.nl/Sisow/iDeal/RestHandler.ashx/DirectoryRequest";
+            var directoryTestUrl = "https://www.sisow.nl/Sisow/iDeal/RestHandler.ashx/DirectoryRequest?test=true";
 
-			var directoryTestUrl = paymentProvider.GetSetting("DirectoryRequestTestUrl");
-			var directoryLiveUrl = paymentProvider.GetSetting("DirectoryRequestUrl");
+            var configDirectoryLiveUrl = paymentProvider.GetSetting("DirectoryRequestUrl");
+            var configDirectoryTestUrl = paymentProvider.GetSetting("DirectoryRequestTestUrl");
 
-			var apiURL = paymentProvider.TestMode ? directoryTestUrl : directoryLiveUrl;
+            if (!string.IsNullOrEmpty(configDirectoryLiveUrl))
+            {
+                directoryLiveUrl = configDirectoryLiveUrl;
+            }
+            if (!string.IsNullOrEmpty(configDirectoryTestUrl))
+            {
+                directoryTestUrl = configDirectoryTestUrl;
+            }
+
+            var apiURL = paymentProvider.TestMode ? directoryTestUrl : directoryLiveUrl;
 
 			var issuerRequest = HttpGet(apiURL);
 
 			XNamespace ns = "https://www.sisow.nl/Sisow/REST";
 			var issuerXml = XDocument.Parse(issuerRequest);
-
+            
 			foreach (var issuer in issuerXml.Descendants(ns + "issuer"))
 			{
 				var issuerId = issuer.Element(ns + "issuerid").Value;

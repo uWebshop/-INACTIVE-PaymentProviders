@@ -42,8 +42,16 @@ namespace uWebshop.Payment.Sisow
 			var reportUrl = paymentProvider.ReportUrl();
 			
 			#region config helper
+            
+            var apiURL = "https://www.sisow.nl/Sisow/iDeal/RestHandler.ashx/TransactionRequest";
 
-			var apiURL = paymentProvider.GetSetting("TransactionRequestUrl");
+            var transactionUrl = paymentProvider.GetSetting("TransactionRequestUrl");
+
+            if (!string.IsNullOrEmpty(transactionUrl))
+            {
+                apiURL = paymentProvider.GetSetting("TransactionRequestUrl");
+            }
+			
 			var merchantId = paymentProvider.GetSetting("merchantid");
 			var merchantKey = paymentProvider.GetSetting("merchantkey");
 			

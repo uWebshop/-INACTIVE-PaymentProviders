@@ -14,13 +14,13 @@ namespace uWebshop.Payment.Sisow
 			return "Sisow";
 		}
 
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
+        public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
 		{
 			var orderId = library.Request("ec");
 			var transactionId = library.Request("trxid");
 			var status = library.Request("status");
 
-			var orderInfo = OrderHelper.GetOrder(transactionId);
+			orderInfo = OrderHelper.GetOrder(transactionId);
 
 			if (orderInfo != null && orderInfo.Paid == false)
 			{
