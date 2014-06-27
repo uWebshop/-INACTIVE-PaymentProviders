@@ -13,7 +13,7 @@ namespace uWebshop.Payment.SagePay
 {
 	public class SagePayPaymentProvider : SagePayPaymentBase, IPaymentProvider
 	{
-		public PaymentTransactionMethod GetParameterRenderMethod()
+	    public PaymentTransactionMethod GetParameterRenderMethod()
 		{
 			return PaymentTransactionMethod.Inline;
 		}

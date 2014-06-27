@@ -31,7 +31,7 @@ namespace uWebshop.Payment.SagePay
         {
             return "SagePay";
         }
-
+        
         /// <summary>
         /// Executes the transaction request to SagePay
         /// </summary>
@@ -95,10 +95,23 @@ namespace uWebshop.Payment.SagePay
                 // if no creditCardNumber field is posted, try to see if the order contains an creditcardnumber
                 creditCardNumber = orderAPI.Customer.GetValue<string>("customerCardNumber");
 
-                if (string.IsNullOrEmpty(creditCardNumber) && !paymentProvider.TestMode)
+                if (cardTypeMethod.ToLowerInvariant() != "paypal" &&
+                    (string.IsNullOrEmpty(creditCardNumber) && !paymentProvider.TestMode))
                 {
                     Log.Instance.LogError("Sagepay CreatePaymentRequest: No Creditcardnumber Given");
-                    throw new Exception("Sagepay CreatePaymentRequest: No Creditcardnumber Given");
+
+                    var orderValidationError = new OrderValidationError
+                    {
+                        Key = "CreditCardError",
+                        Name = "CreditCard Error",
+                        Value = "No Creditcardnumber Entered"
+                    };
+
+                    orderInfo.OrderValidationErrors.Add(orderValidationError);
+
+                    orderInfo.Save();
+                    
+                    return null;
                 }
             }
 
@@ -107,9 +120,20 @@ namespace uWebshop.Payment.SagePay
                 // if no creditCardNumber field is posted, try to see if the order contains an creditcardnumber
                 creditCardCV2 = orderAPI.Customer.GetValue<string>("customerCardCV2");
 
-                if (string.IsNullOrEmpty(creditCardCV2) && !paymentProvider.TestMode)
+                if (cardTypeMethod.ToLowerInvariant() != "paypal" && string.IsNullOrEmpty(creditCardCV2) && !paymentProvider.TestMode)
                 {
                     Log.Instance.LogError("Sagepay CreatePaymentRequest: No CV2 Given");
+                    var orderValidationError = new OrderValidationError
+                    {
+                        Key = "CV2Error",
+                        Name = "CV2 Error",
+                        Value = "No CV2 Entered"
+                    };
+
+                    orderInfo.OrderValidationErrors.Add(orderValidationError);
+
+                    orderInfo.Save();
+
                     return null;
                 }
             }
@@ -119,16 +143,69 @@ namespace uWebshop.Payment.SagePay
                 // if no ExpiryDate field is posted, try to see if the order contains an expirydate
                 creditCardExpiryDate = orderAPI.Customer.GetValue<string>("customerCardExpiryDate");
 
-                if (string.IsNullOrEmpty(creditCardExpiryDate) && !paymentProvider.TestMode)
+                if (cardTypeMethod.ToLowerInvariant() != "paypal" && string.IsNullOrEmpty(creditCardExpiryDate) && !paymentProvider.TestMode)
                 {
                     Log.Instance.LogError("Sagepay CreatePaymentRequest: No creditCardExpiryDate Given");
+
+                    var orderValidationError = new OrderValidationError
+                    {
+                        Key = "CardExpiryDateError",
+                        Name = "CardExpiryDate Error",
+                        Value = "No CardExpiryDate Entered"
+                    };
+
+                    orderInfo.OrderValidationErrors.Add(orderValidationError);
+
+                    orderInfo.Save();
+
                     return null;
                 }
             }
+            
+            // Preset Valid test creditcardnumbers for testmode
+            if (paymentProvider.TestMode)
+            {
+                switch (cardTypeMethod.ToUpperInvariant())
+                {
+                    case "VISA":
+                        creditCardNumber = "4929000000006";
+                        break;
+                    case "MC":
+                        creditCardNumber = "5404000000000001";
+                        break;
+                    case "MCDEBIT":
+                        creditCardNumber = "5573470000000001";
+                        break;
+                    case "DELTA":
+                        creditCardNumber = "4462000000000003";
+                        break;
+                    case "MAESTRO":
+                        creditCardNumber = "5641820000000005";
+                        break;
+                    case "UKE":
+                        creditCardNumber = "4917300000000008";
+                        break;
+                    case "AMEX":
+                        creditCardNumber = "374200000000004";
+                        break;
+                    case "DINERS":
+                        creditCardNumber = "36000000000008";
+                        break;
+                    case "DC":
+                        creditCardNumber = "4929000000006";
+                        break;
+                    case "JCB":
+                        creditCardNumber = "3569990000000009";
+                        break;
+                    case "LASER":
+                        creditCardNumber = "6304990000000000044";
+                        break;
+                }
+            }
 
-            request.Parameters.Add("CardType", paymentProvider.TestMode ? "VISA" : cardTypeMethod);
+            request.Parameters.Add("CardType", cardTypeMethod);
             request.Parameters.Add("CardHolder", paymentProvider.TestMode ? "T.Ester" : creditCardHolderName);
-            request.Parameters.Add("CardNumber", paymentProvider.TestMode ? "4929000000006" : creditCardNumber);
+            request.Parameters.Add("CardNumber", creditCardNumber);
             request.Parameters.Add("CV2", paymentProvider.TestMode ? "123" : creditCardCV2);
             request.Parameters.Add("ExpiryDate", paymentProvider.TestMode ? DateTime.Now.AddMonths(6).ToString("MMyy") : creditCardExpiryDate);
 
@@ -185,13 +262,32 @@ namespace uWebshop.Payment.SagePay
 
             var deserializer = new ResponseSerializer();
             var response = deserializer.Deserialize<TransactionRegistrationResponse>(responseString);
-            
-            orderInfo.PaymentInfo.Parameters = response.Status + "&" + response.StatusDetail;
-            PaymentProviderHelper.SetTransactionId(orderInfo, response.VPSTxId);
+
+            if (!string.IsNullOrEmpty(response.VPSTxId) && response.Status == ResponseType.Ok)
+            {
+                orderInfo.PaymentInfo.Parameters = response.Status + "&" + response.StatusDetail;
+
+                PaymentProviderHelper.SetTransactionId(orderInfo, response.VPSTxId);
+            }
+            else
+            {
+                Log.Instance.LogError("SagePay Did not return a proper status: " + response.Status + " detail: " + response.StatusDetail);
+
+                var orderValidationError = new OrderValidationError
+                {
+                    Key = "SagePayReturnedError",
+                    Name = "Payement Error",
+                    Value = response.StatusDetail
+                };
+
+                orderInfo.OrderValidationErrors.Add(orderValidationError);
+
+                orderInfo.Save();
+            }
 
             orderInfo.Save();
 
-            return null;
+            return request;
         }
 
         private string GetSagePaySafeCustomerInfo(string value)
@@ -202,12 +298,18 @@ namespace uWebshop.Payment.SagePay
         public string GetPaymentUrl(OrderInfo orderInfo)
         {
             var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
-            
-            var status = orderInfo.PaymentInfo.Parameters.Split('&')[0];
-          
-            return status.ToUpperInvariant() == "OK" ? paymentProvider.SuccessUrl() : paymentProvider.ErrorUrl();
+
+            if (!string.IsNullOrEmpty(orderInfo.PaymentInfo.Parameters))
+            {
+                var status = orderInfo.PaymentInfo.Parameters.Split('&')[0];
+
+                return status.ToUpperInvariant() == "OK" ? paymentProvider.SuccessUrl() : paymentProvider.ErrorUrl();
+            }
+
+            return paymentProvider.ErrorUrl();
         }
 
+       
         private class TransactionRegistrationResponse
         {
             /// <summary>

@@ -19,38 +19,41 @@ namespace uWebshop.Payment.SagePay
             // Check for match
             if (orderInfo != null && orderInfo.Paid == false)
             {
-                var status = orderInfo.PaymentInfo.Parameters.Split('&')[0];
-                var message = orderInfo.PaymentInfo.Parameters.Split('&')[1];
-
-                // Get statusses from payment provider Response
-                switch (status.ToUpperInvariant())
+                if (!string.IsNullOrEmpty(orderInfo.PaymentInfo.Parameters))
                 {
-                    case "OK":
-                        orderInfo.Paid = true;
-                        orderInfo.Status = OrderStatus.ReadyForDispatch;
+                    var status = orderInfo.PaymentInfo.Parameters.Split('&')[0];
+                    var message = orderInfo.PaymentInfo.Parameters.Split('&')[1];
 
-                        break;
-                    case "MALFORMED":
-                        orderInfo.Paid = false;
-                        orderInfo.Status = OrderStatus.PaymentFailed;
-                        orderInfo.PaymentInfo.ErrorMessage = message;
-                        Log.Instance.LogError("SagePay Payment Error: " + message);
+                    // Get statusses from payment provider Response
+                    switch (status.ToUpperInvariant())
+                    {
+                        case "OK":
+                            orderInfo.Paid = true;
+                            orderInfo.Status = OrderStatus.ReadyForDispatch;
 
-                        break;
-                    case "INVALID":
-                        orderInfo.Paid = false;
-                        orderInfo.Status = OrderStatus.PaymentFailed;
-                        orderInfo.PaymentInfo.ErrorMessage = message;
-                        Log.Instance.LogError("SagePay Payment Error: " + message);
+                            break;
+                        case "MALFORMED":
+                            orderInfo.Paid = false;
+                            orderInfo.Status = OrderStatus.PaymentFailed;
+                            orderInfo.PaymentInfo.ErrorMessage = message;
+                            Log.Instance.LogError("SagePay Payment Error: " + message);
 
-                        break;
-                    case "ERROR":
-                        orderInfo.Paid = false;
-                        orderInfo.Status = OrderStatus.PaymentFailed;
-                        orderInfo.PaymentInfo.ErrorMessage = message;
-                        Log.Instance.LogError("SagePay Payment Error: " + message);
+                            break;
+                        case "INVALID":
+                            orderInfo.Paid = false;
+                            orderInfo.Status = OrderStatus.PaymentFailed;
+                            orderInfo.PaymentInfo.ErrorMessage = message;
+                            Log.Instance.LogError("SagePay Payment Error: " + message);
 
-                        break;
+                            break;
+                        case "ERROR":
+                            orderInfo.Paid = false;
+                            orderInfo.Status = OrderStatus.Incomplete;
+                            orderInfo.PaymentInfo.ErrorMessage = message;
+                            Log.Instance.LogError("SagePay Payment Error: " + message);
+
+                            break;
+                    }
                 }
 
                 orderInfo.Save();
