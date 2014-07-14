@@ -121,7 +121,7 @@ namespace uWebshop.Payment.MultiSafePay
 			orderInfo.PaymentInfo.Url = paymentUrl.Value;
 			PaymentProviderHelper.SetTransactionId(orderInfo, orderInfo.UniqueOrderId.ToString());
 
-			return null;
+			return new PaymentRequest();
 		}
 
 		// Create an md5 sum string of this string

@@ -99,17 +99,8 @@ namespace uWebshop.Payment.SagePay
                     (string.IsNullOrEmpty(creditCardNumber) && !paymentProvider.TestMode))
                 {
                     Log.Instance.LogError("Sagepay CreatePaymentRequest: No Creditcardnumber Given");
-
-                    var orderValidationError = new OrderValidationError
-                    {
-                        Key = "CreditCardError",
-                        Name = "CreditCard Error",
-                        Value = "No Creditcardnumber Entered"
-                    };
-
-                    orderInfo.OrderValidationErrors.Add(orderValidationError);
-
-                    orderInfo.Save();
+                    
+                    PaymentProviderHelper.AddValidationResult(orderInfo, paymentProvider.Id, "CreditCardError", "No Creditcardnumber Entered");
                     
                     return null;
                 }
@@ -123,16 +114,8 @@ namespace uWebshop.Payment.SagePay
                 if (cardTypeMethod.ToLowerInvariant() != "paypal" && string.IsNullOrEmpty(creditCardCV2) && !paymentProvider.TestMode)
                 {
                     Log.Instance.LogError("Sagepay CreatePaymentRequest: No CV2 Given");
-                    var orderValidationError = new OrderValidationError
-                    {
-                        Key = "CV2Error",
-                        Name = "CV2 Error",
-                        Value = "No CV2 Entered"
-                    };
-
-                    orderInfo.OrderValidationErrors.Add(orderValidationError);
-
-                    orderInfo.Save();
+                    
+                    PaymentProviderHelper.AddValidationResult(orderInfo, paymentProvider.Id, "CV2Error", "No CV2 Entered");
 
                     return null;
                 }
@@ -146,17 +129,8 @@ namespace uWebshop.Payment.SagePay
                 if (cardTypeMethod.ToLowerInvariant() != "paypal" && string.IsNullOrEmpty(creditCardExpiryDate) && !paymentProvider.TestMode)
                 {
                     Log.Instance.LogError("Sagepay CreatePaymentRequest: No creditCardExpiryDate Given");
-
-                    var orderValidationError = new OrderValidationError
-                    {
-                        Key = "CardExpiryDateError",
-                        Name = "CardExpiryDate Error",
-                        Value = "No CardExpiryDate Entered"
-                    };
-
-                    orderInfo.OrderValidationErrors.Add(orderValidationError);
-
-                    orderInfo.Save();
+                    
+                    PaymentProviderHelper.AddValidationResult(orderInfo, paymentProvider.Id, "CardExpiryDateError", "No CardExpiryDate Entered");
 
                     return null;
                 }
@@ -273,16 +247,7 @@ namespace uWebshop.Payment.SagePay
             {
                 Log.Instance.LogError("SagePay Did not return a proper status: " + response.Status + " detail: " + response.StatusDetail);
 
-                var orderValidationError = new OrderValidationError
-                {
-                    Key = "SagePayReturnedError",
-                    Name = "Payement Error",
-                    Value = response.StatusDetail
-                };
-
-                orderInfo.OrderValidationErrors.Add(orderValidationError);
-
-                orderInfo.Save();
+                PaymentProviderHelper.AddValidationResult(orderInfo, paymentProvider.Id, "SagePayReturnedError", response.StatusDetail);
             }
 
             orderInfo.Save();

@@ -31,7 +31,7 @@ namespace uWebshop.Payment.Mollie
 
 			PaymentProviderHelper.SetTransactionId(orderInfo, transactionId);
 			
-			return null;
+			return new PaymentRequest();
 		}
 
 		public string GetPaymentUrl(OrderInfo orderInfo)
