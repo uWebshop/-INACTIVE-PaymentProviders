@@ -22,3 +22,5 @@ uWebshop.Payment.SagePay/obj/
 uWebshop.Payment.SagePay/bin/
 uWebshop.Payment.SagePay/package/package.xml
 uWebshop.Payment.SagePay/package/uWebshopSagePayInstaller.ascx
+uWebshop.Payment.*.dll
+*.csproj.FileListAbsolute.txt
