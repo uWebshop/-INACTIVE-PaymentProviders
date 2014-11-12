@@ -42,7 +42,7 @@ namespace uWebshop.Payment.EasyIdeal
         public const string IDEAL_EXECUTE = "IDEAL.EXECUTE";
         public const string TRANSACTIONSTATUS = "TRANSACTIONSTATUS";
 
-        public string getXML(string action, SortedList<string, string> args, string merchantId, string merchantKey, string merchantSecret)
+        public string GetXml(string action, SortedList<string, string> args, string merchantId, string merchantKey, string merchantSecret)
         {
             var document = new XDocument(
                            new XElement("Transaction",
@@ -53,7 +53,7 @@ namespace uWebshop.Payment.EasyIdeal
                                         new XElement("Merchant",
                                                      new XElement("ID", merchantId),
                                                      new XElement("Key", merchantKey),
-                                                     new XElement("Checksum", getChecksum(args, merchantSecret))
+                                                     new XElement("Checksum", GetChecksum(args, merchantSecret))
                                             )
                                )
                            ) { Declaration = new XDeclaration("1.0", "utf-8", "true") };
@@ -72,7 +72,7 @@ namespace uWebshop.Payment.EasyIdeal
             return document.ToString();
         }
 
-        public string postXML(string XMLData, string url)
+        public string PostXml(string XMLData, string url)
         {
             XMLData = "data=" + XMLData;
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -92,7 +92,7 @@ namespace uWebshop.Payment.EasyIdeal
             return xmlDoc.ToString();
         }
 
-        public string getChecksum(SortedList<string, string> args, string secret)
+        public string GetChecksum(SortedList<string, string> args, string secret)
         {
             string concatValues = "";
             foreach (KeyValuePair<string, string> parameter in args)
@@ -103,7 +103,7 @@ namespace uWebshop.Payment.EasyIdeal
             return SHA1HashStringForUTF8String(concatValues);
         }
 
-        public bool checkChecksumPaymentStatus(string transactionId, string transactionCode, string paymentStatus, string salt, string checksum)
+        public bool CheckChecksumPaymentStatus(string transactionId, string transactionCode, string paymentStatus, string salt, string checksum)
         {
             string concatValues = transactionId + transactionCode + paymentStatus + salt;
             if (SHA1HashStringForUTF8String(concatValues) == checksum)
