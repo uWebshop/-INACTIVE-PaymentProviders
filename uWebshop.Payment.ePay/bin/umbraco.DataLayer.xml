@@ -203,6 +203,14 @@
             <returns>The escaped value.</returns>
             <remarks>You should use parameters instead.</remarks>
         </member>
+        <member name="M:umbraco.DataLayer.ISqlHelper.Concat(System.String[])">
+            <summary>
+            Creates a concatenation fragment for use in an SQL query.
+            </summary>
+            <param name="values">The values that need to be concatenated</param>
+            <returns>The SQL query fragment.</returns>
+            <remarks>SQL Server uses a+b, MySql uses concat(a,b), Oracle uses a||b...</remarks>
+        </member>
         <member name="M:umbraco.DataLayer.ISqlHelper.ExecuteNonQuery(System.String,umbraco.DataLayer.IParameter[])">
             <summary>
             Executes a command and returns the number of rows affected.
@@ -291,6 +299,14 @@
             <param name="value">Value of the parameter.</param>
             <returns>A new parameter of the correct type.</returns>
             <remarks>Abstract factory pattern</remarks>
+        </member>
+        <member name="M:umbraco.DataLayer.Extensions.SqlHelperExtender.Concat(System.String[])">
+            <summary>
+            Creates a concatenation fragment for use in an SQL query.
+            </summary>
+            <param name="values">The values that need to be concatenated</param>
+            <returns>The SQL query fragment.</returns>
+            <remarks>SQL Server uses a+b, MySql uses concat(a,b), Oracle uses a||b...</remarks>
         </member>
         <member name="M:umbraco.DataLayer.Extensions.SqlHelperExtender.EscapeString(System.String)">
             <summary>
@@ -2020,6 +2036,14 @@
             <param name="scalar">A scalar returned by ExecuteScalar.</param>
             <returns>The scalar, converted to type T.</returns>
         </member>
+        <member name="M:umbraco.DataLayer.SqlHelper`1.Concat(System.String[])">
+            <summary>
+            Creates a concatenation fragment for use in an SQL query.
+            </summary>
+            <param name="values">The values that need to be concatenated</param>
+            <returns>The SQL query fragment.</returns>
+            <remarks>SQL Server uses a+b, MySql uses concat(a,b), Oracle uses a||b...</remarks>
+        </member>
         <member name="M:umbraco.DataLayer.SqlHelper`1.EscapeString(System.String)">
             <summary>
             Escapes a string for use in an SQL query.
@@ -2183,6 +2207,14 @@
             <typeparam name="T">Desired type of the value.</typeparam>
             <param name="scalar">A scalar returned by ExecuteScalar.</param>
             <returns>The scalar, converted to type T.</returns>
+        </member>
+        <member name="M:umbraco.DataLayer.SqlHelpers.MySql.MySqlHelper.Concat(System.String[])">
+            <summary>
+            Creates a concatenation fragment for use in an SQL query.
+            </summary>
+            <param name="values">The values that need to be concatenated</param>
+            <returns>The SQL query fragment.</returns>
+            <remarks>SQL Server uses a+b, MySql uses concat(a,b), Oracle uses a||b...</remarks>
         </member>
         <member name="T:umbraco.DataLayer.SqlHelpers.MySql.MySqlParameter">
             <summary>

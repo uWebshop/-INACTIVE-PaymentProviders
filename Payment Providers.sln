@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uWebshop.Payment.Buckaroo", "uWebshop.Payment.Buckaroo\uWebshop.Payment.Buckaroo.csproj", "{7FF6D835-1748-42F6-A5AB-4003A8008B3D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uWebshop.Payment.ePay", "uWebshop.Payment.ePay\uWebshop.Payment.ePay.csproj", "{6DCD5F2E-E090-425F-A8DD-8A8884D0DED9}"
@@ -23,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readme", "Readme", "{EFD4A4
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "uWebshop.Payment.EasyIdeal", "uWebshop.Payment.EasyIdeal\uWebshop.Payment.EasyIdeal.csproj", "{FE59C869-3526-4904-8760-2B020939D545}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +70,10 @@ Global
 		{5A3C3DE0-D28A-4C53-8AB0-C84A34C5F684}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A3C3DE0-D28A-4C53-8AB0-C84A34C5F684}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A3C3DE0-D28A-4C53-8AB0-C84A34C5F684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE59C869-3526-4904-8760-2B020939D545}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE59C869-3526-4904-8760-2B020939D545}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE59C869-3526-4904-8760-2B020939D545}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE59C869-3526-4904-8760-2B020939D545}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

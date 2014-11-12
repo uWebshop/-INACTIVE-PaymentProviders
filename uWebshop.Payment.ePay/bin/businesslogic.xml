@@ -331,17 +331,150 @@
             </summary>
             <value>The action.</value>
         </member>
+        <member name="T:umbraco.BusinessLogic.LogTypes">
+            <summary>
+            The collection of available log types.
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.New">
+            <summary>
+            Used when new nodes are added
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Save">
+            <summary>
+            Used when nodes are saved
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Open">
+            <summary>
+            Used when nodes are opened
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Delete">
+            <summary>
+            Used when nodes are deleted
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Publish">
+            <summary>
+            Used when nodes are published
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.SendToPublish">
+            <summary>
+            Used when nodes are send to publishing
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.UnPublish">
+            <summary>
+            Used when nodes are unpublished
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Move">
+            <summary>
+            Used when nodes are moved
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Copy">
+            <summary>
+            Used when nodes are copied
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.AssignDomain">
+            <summary>
+            Used when nodes are assígned a domain
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.PublicAccess">
+            <summary>
+            Used when public access are changed for a node
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Sort">
+            <summary>
+            Used when nodes are sorted
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Notify">
+            <summary>
+            Used when a notification are send to a user
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Login">
+            <summary>
+            Used when a user logs into the umbraco back-end
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Logout">
+            <summary>
+            Used when a user logs out of the umbraco back-end
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.LoginFailure">
+            <summary>
+            Used when a user login fails
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.System">
+            <summary>
+            General system notification
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Debug">
+            <summary>
+            System debugging notification
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Error">
+            <summary>
+            System error notification
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.NotFound">
+            <summary>
+            Notfound error notification
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.RollBack">
+            <summary>
+            Used when a node's content is rolled back to a previous version
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.PackagerInstall">
+            <summary>
+            Used when a package is installed
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.PackagerUninstall">
+            <summary>
+            Used when a package is uninstalled
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Ping">
+            <summary>
+            Used when a ping is send to/from the system
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.SendToTranslate">
+            <summary>
+            Used when a node is send to translation
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.ScheduledTask">
+            <summary>
+            Notification from a Scheduled task.
+            </summary>
+        </member>
+        <member name="F:umbraco.BusinessLogic.LogTypes.Custom">
+            <summary>
+            Use this log action for custom log messages that should be shown in the audit trail
+            </summary>
+        </member>
         <member name="T:umbraco.businesslogic.PluginManagerExtensions">
             <summary>
             Extension methods for the PluginTypeResolver
             </summary>
-        </member>
-        <member name="M:umbraco.businesslogic.PluginManagerExtensions.ResolveApplicationStartupHandlers(Umbraco.Core.PluginManager)">
-            <summary>
-            Returns all available IApplicationStartupHandler objects
-            </summary>
-            <param name="resolver"></param>
-            <returns></returns>
         </member>
         <member name="M:umbraco.businesslogic.PluginManagerExtensions.ResolveApplications(Umbraco.Core.PluginManager)">
             <summary>
@@ -415,7 +548,7 @@
             <summary>
             Validates the user context ID.
             </summary>
-            <param name="umbracoUserContextID">The umbraco user context ID.</param>
+            <param name="currentUmbracoUserContextID">The umbraco user context ID.</param>
             <returns></returns>
         </member>
         <member name="M:umbraco.BasePages.BasePage.ClearLogin">
@@ -462,6 +595,14 @@
             Returns the current BasePage for the current request. 
             This assumes that the current page is a BasePage, otherwise, returns null;
             </summary>
+        </member>
+        <member name="P:umbraco.BasePages.BasePage.Url">
+            <summary>
+            Returns a UrlHelper
+            </summary>
+            <remarks>
+            This URL helper is created without any route data and an empty request context
+            </remarks>
         </member>
         <member name="P:umbraco.BasePages.BasePage.ClientTools">
             <summary>
@@ -1079,145 +1220,15 @@
             <param name="SinceDate">The since date.</param>
             <returns>A reader for the log.</returns>
         </member>
-        <member name="T:umbraco.BusinessLogic.LogTypes">
+        <member name="M:umbraco.BusinessLogic.Log.GetLogReader(umbraco.BusinessLogic.User,umbraco.BusinessLogic.LogTypes,System.DateTime,System.Int32)">
             <summary>
-            The collection of available log types.
+            Gets a reader of specific for the log for specific types and a specified user.
             </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.New">
-            <summary>
-            Used when new nodes are added
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Save">
-            <summary>
-            Used when nodes are saved
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Open">
-            <summary>
-            Used when nodes are opened
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Delete">
-            <summary>
-            Used when nodes are deleted
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Publish">
-            <summary>
-            Used when nodes are published
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.SendToPublish">
-            <summary>
-            Used when nodes are send to publishing
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.UnPublish">
-            <summary>
-            Used when nodes are unpublished
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Move">
-            <summary>
-            Used when nodes are moved
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Copy">
-            <summary>
-            Used when nodes are copied
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.AssignDomain">
-            <summary>
-            Used when nodes are assígned a domain
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.PublicAccess">
-            <summary>
-            Used when public access are changed for a node
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Sort">
-            <summary>
-            Used when nodes are sorted
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Notify">
-            <summary>
-            Used when a notification are send to a user
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Login">
-            <summary>
-            Used when a user logs into the umbraco back-end
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Logout">
-            <summary>
-            Used when a user logs out of the umbraco back-end
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.LoginFailure">
-            <summary>
-            Used when a user login fails
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.System">
-            <summary>
-            General system notification
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Debug">
-            <summary>
-            System debugging notification
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Error">
-            <summary>
-            System error notification
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.NotFound">
-            <summary>
-            Notfound error notification
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.RollBack">
-            <summary>
-            Used when a node's content is rolled back to a previous version
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.PackagerInstall">
-            <summary>
-            Used when a package is installed
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.PackagerUninstall">
-            <summary>
-            Used when a package is uninstalled
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Ping">
-            <summary>
-            Used when a ping is send to/from the system
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.SendToTranslate">
-            <summary>
-            Used when a node is send to translation
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.ScheduledTask">
-            <summary>
-            Notification from a Scheduled task.
-            </summary>
-        </member>
-        <member name="F:umbraco.BusinessLogic.LogTypes.Custom">
-            <summary>
-            Use this log action for custom log messages that should be shown in the audit trail
-            </summary>
+            <param name="user">The user.</param>
+            <param name="type">The type of log message.</param>
+            <param name="sinceDate">The since date.</param>
+            <param name="numberOfResults">Number of rows returned</param>
+            <returns>A reader for the log.</returns>
         </member>
         <member name="T:umbraco.BusinessLogic.console.MenuItemI">
             <summary>
@@ -1696,6 +1707,11 @@
             Whether to force safe aliases (no spaces, no special characters) at businesslogic level on contenttypes and propertytypes
             </summary>
         </member>
+        <member name="P:umbraco.UmbracoSettings.DisallowedUploadFiles">
+            <summary>
+            File types that will not be allowed to be uploaded via the content/media upload control
+            </summary>
+        </member>
         <member name="P:umbraco.UmbracoSettings.ImageFileTypes">
             <summary>
             Gets the allowed image file types.
@@ -1864,6 +1880,24 @@
             have a splash page
             Default is disabled
             </summary>
+        </member>
+        <member name="P:umbraco.UmbracoSettings.MacroErrorBehaviour">
+            <summary>
+            This configuration setting defines how to handle macro errors:
+            - Inline - Show error within macro as text (default and current Umbraco 'normal' behavior)
+            - Silent - Suppress error and hide macro
+            - Throw  - Throw an exception and invoke the global error handler (if one is defined, if not you'll get a YSOD)
+            </summary>
+            <value>MacroErrorBehaviour enum defining how to handle macro errors.</value>
+        </member>
+        <member name="P:umbraco.UmbracoSettings.IconPickerBehaviour">
+            <summary>
+            This configuration setting defines how to show icons in the document type editor. 
+            - ShowDuplicates       - Show duplicates in files and sprites. (default and current Umbraco 'normal' behaviour)
+            - HideSpriteDuplicates - Show files on disk and hide duplicates from the sprite
+            - HideFileDuplicates   - Show files in the sprite and hide duplicates on disk
+            </summary>
+            <value>MacroErrorBehaviour enum defining how to show icons in the document type editor.</value>
         </member>
         <member name="T:umbraco.UmbracoSettings.Webservices">
             <summary>

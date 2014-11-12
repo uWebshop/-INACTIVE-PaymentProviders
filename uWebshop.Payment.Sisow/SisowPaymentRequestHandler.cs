@@ -1,20 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
 using uWebshop.Common;
-using uWebshop.DataAccess;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
-using umbraco;
 // do not remove the umbraco.interfaces using below
-using umbraco.BusinessLogic;
-using umbraco.interfaces;
-using umbraco.NodeFactory;
 using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Payment.Sisow

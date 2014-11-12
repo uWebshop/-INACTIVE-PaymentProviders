@@ -41,6 +41,14 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="uWebshop.Common, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\uWebshop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="uWebshop.Domain, Version=2.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\uWebshop.Domain.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
@@ -59,16 +67,6 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
-      <Project>{61eef91b-22ed-48f0-83eb-cdc7431c5bde}</Project>
-      <Name>uWebshop.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
-      <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
-      <Name>uWebshop.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

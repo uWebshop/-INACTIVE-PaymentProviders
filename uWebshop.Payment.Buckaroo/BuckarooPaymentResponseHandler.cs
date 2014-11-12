@@ -14,7 +14,7 @@ namespace uWebshop.Payment.Buckaroo
 
     public class BuckarooPaymentResponseHandler : BuckarooPaymentBase, IPaymentResponseHandler
 	{
-		public string HandlePaymentResponse(PaymentProvider paymentProvider)
+        public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
 		{
 		    var httpRequest = HttpContext.Current.Request;
             
@@ -50,16 +50,14 @@ namespace uWebshop.Payment.Buckaroo
 				HttpContext.Current.Response.Redirect(paymentProvider.ErrorUrl());
 			}
 
-            var order = OrderHelper.GetOrder(buckarooParams.TransactionId);
-
-			var localizedPaymentProvider = PaymentProvider.GetPaymentProvider(paymentProvider.Id, order.StoreInfo.Alias);
+            var localizedPaymentProvider = PaymentProvider.GetPaymentProvider(paymentProvider.Id, orderInfo.StoreInfo.Alias);
 
 			var succesUrl = localizedPaymentProvider.SuccessUrl();
 			var failUrl = localizedPaymentProvider.ErrorUrl();
 
 			var redirectUrl = succesUrl;
 
-			if (order.Paid == true)
+            if (orderInfo.Paid == true)
 			{
                 Log.Instance.LogError("Buckaroo Already PAID returned transactionId: " + buckarooParams.TransactionId + " resultCode: " + buckarooParams.StatusCode + " currency:" + buckarooParams.Currency + " amount: " + buckarooParams.Amount);
 				HttpContext.Current.Response.Redirect(succesUrl);
@@ -90,78 +88,78 @@ namespace uWebshop.Payment.Buckaroo
 			switch (buckarooParams.StatusCode)
 			{
 				case "190":
-					order.Paid = true;
-					order.Status = OrderStatus.ReadyForDispatch;
+                    orderInfo.Paid = true;
+                    orderInfo.Status = OrderStatus.ReadyForDispatch;
 					redirectUrl = succesUrl;
 					break;
 				case "490":
-					order.Paid = false;
-					order.Status = OrderStatus.PaymentFailed;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.PaymentFailed;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Transaction Failed (490) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Transaction Failed (490) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "491":
-					order.Paid = false;
-					order.Status = OrderStatus.PaymentFailed;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.PaymentFailed;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Validation Failed (491) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Validation Failed (491) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "492":
-					order.Paid = false;
-					order.Status = OrderStatus.PaymentFailed;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.PaymentFailed;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Technical Failure (492) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Technical Failure (492) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "690":
-					order.Paid = false;
-					order.Status = OrderStatus.PaymentFailed;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.PaymentFailed;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Payment Denied by 3rd Party (690) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Payment Denied by 3rd Party (690) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "790":
-					order.Paid = false;
-					order.Status = OrderStatus.WaitingForPayment;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.WaitingForPayment;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Waiting for customer input (790) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Waiting for customer input (790) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "791":
-					order.Paid = false;
-					order.Status = OrderStatus.WaitingForPayment;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.WaitingForPayment;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Waiting for transaction handling (791) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Waiting for transaction handling (791) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "792":
-					order.Paid = false;
-					order.Status = OrderStatus.WaitingForPayment;                    
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.WaitingForPayment;                    
 					redirectUrl = failUrl;
-			        Log.Instance.LogError("Buckaroo ResponseHandler Waiting for customer to return from 3rd party website (792) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Waiting for customer to return from 3rd party website (792) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "793":
-					order.Paid = false;
-					order.Status = OrderStatus.WaitingForPayment;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.WaitingForPayment;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Transaction is On Hold (793) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Transaction is On Hold (793) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "890":
-					order.Paid = false;
-					order.Status = OrderStatus.WaitingForPayment;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.WaitingForPayment;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Transaction Cancelled by Customer (890) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Transaction Cancelled by Customer (890) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 				case "891":
-					order.Paid = false;
-					order.Status = OrderStatus.WaitingForPayment;
+                    orderInfo.Paid = false;
+                    orderInfo.Status = OrderStatus.WaitingForPayment;
 					redirectUrl = failUrl;
-                    Log.Instance.LogError("Buckaroo ResponseHandler Transaction Cancelled by Merchant (891) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + order.OrderNumber);
+                    Log.Instance.LogError("Buckaroo ResponseHandler Transaction Cancelled by Merchant (891) for transactionId: " + buckarooParams.TransactionId + " Ordernumber: " + orderInfo.OrderNumber);
 					break;
 			}
 
-			order.Save();
+            orderInfo.Save();
 			
 
 			HttpContext.Current.Response.Redirect(redirectUrl);
 
-			return null;
+            return orderInfo;
 		}
 	}
 

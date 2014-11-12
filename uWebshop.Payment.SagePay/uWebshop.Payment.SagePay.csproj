@@ -30,14 +30,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="businesslogic">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\businesslogic.dll</HintPath>
+    <Reference Include="businesslogic, Version=1.0.4902.15215, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\businesslogic.dll</HintPath>
     </Reference>
-    <Reference Include="cms">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\cms.dll</HintPath>
+    <Reference Include="cms, Version=1.0.4902.15215, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\cms.dll</HintPath>
     </Reference>
-    <Reference Include="interfaces">
-      <HintPath>..\..\Binary Dependencies\interfaces.dll</HintPath>
+    <Reference Include="interfaces, Version=1.0.4701.29087, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\interfaces.dll</HintPath>
     </Reference>
     <Reference Include="SagePay.IntegrationKit.DotNet">
       <HintPath>Binary Dependencies\SagePay.IntegrationKit.DotNet.dll</HintPath>
@@ -48,11 +51,17 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
-    <Reference Include="umbraco">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\umbraco.dll</HintPath>
+    <Reference Include="umbraco, Version=1.0.4902.15217, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\umbraco.dll</HintPath>
     </Reference>
-    <Reference Include="Umbraco.Core">
-      <HintPath>..\..\Binary Dependencies umbraco6.1\Umbraco.Core.dll</HintPath>
+    <Reference Include="uWebshop.Common, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\uWebshop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="uWebshop.Domain, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\uWebshop.Domain.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -74,16 +83,6 @@
     <Content Include="uWebshopSagePayInstaller.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
-      <Project>{61eef91b-22ed-48f0-83eb-cdc7431c5bde}</Project>
-      <Name>uWebshop.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
-      <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
-      <Name>uWebshop.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

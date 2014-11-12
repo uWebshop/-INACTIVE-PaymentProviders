@@ -33,14 +33,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="businesslogic">
-      <HintPath>..\..\Binary Dependencies\businesslogic.dll</HintPath>
+    <Reference Include="businesslogic, Version=1.0.4701.29087, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\businesslogic.dll</HintPath>
     </Reference>
-    <Reference Include="cms">
-      <HintPath>..\..\Binary Dependencies\cms.dll</HintPath>
+    <Reference Include="cms, Version=1.0.4701.29087, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\cms.dll</HintPath>
     </Reference>
-    <Reference Include="interfaces">
-      <HintPath>..\..\Binary Dependencies\interfaces.dll</HintPath>
+    <Reference Include="interfaces, Version=1.0.4701.29087, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -48,9 +51,17 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
-    <Reference Include="umbraco, Version=1.0.4902.15217, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="umbraco, Version=1.0.4868.24773, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Binary Dependencies\umbraco.dll</HintPath>
+      <HintPath>..\Binary Dependencies\umbraco.dll</HintPath>
+    </Reference>
+    <Reference Include="uWebshop.Common, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\uWebshop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="uWebshop.Domain, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binary Dependencies\uWebshop.Domain.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -70,20 +81,6 @@
   <ItemGroup>
     <Content Include="package.xml" />
     <Content Include="uWebshopPayPalInstaller.ascx" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
-      <Project>{61eef91b-22ed-48f0-83eb-cdc7431c5bde}</Project>
-      <Name>uWebshop.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\uWebshop.DataAccess\uWebshop.DataAccess.csproj">
-      <Project>{3cf8ee6f-506f-4d47-8368-d6c6b9fa42e3}</Project>
-      <Name>uWebshop.DataAccess</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
-      <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
-      <Name>uWebshop.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
