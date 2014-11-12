@@ -22,10 +22,9 @@ uWebshop.Payment.SagePay/obj/
 uWebshop.Payment.SagePay/bin/
 uWebshop.Payment.SagePay/package/package.xml
 uWebshop.Payment.SagePay/package/uWebshopSagePayInstaller.ascx
+<<<<<<< HEAD
 uWebshop.Payment.Sisow/bin/
 uWebshop.Payment.Buckaroo/bin/
-uWebshop.Payment.*.dll
-*.csproj.FileListAbsolute.txt
 uWebshop.Payment.Ogone/uWebshop.2.5.0.0.PaymentProvider.Ogone/
 uWebshop.Payment.PayPal/uWebshop.2.5.0.0.PaymentProvider.PayPal/
 uWebshop.Payment.Mollie/uWebshop.2.5.0.0.PaymentProvider.Mollie/
@@ -33,3 +32,7 @@ uWebshop.Payment.Omnikassa/uWebshop.2.5.0.0.PaymentProvider.Omnikassa/
 *.zip
 uWebshop.Payment.EasyIdeal/obj/
 uWebshop.Payment.Sisow/obj/
+=======
+uWebshop.Payment.*.dll
+*.csproj.FileListAbsolute.txt
+>>>>>>> origin/master
