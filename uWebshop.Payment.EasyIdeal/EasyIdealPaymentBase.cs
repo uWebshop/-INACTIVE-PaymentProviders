@@ -44,43 +44,32 @@ namespace uWebshop.Payment.EasyIdeal
 
         public string getXML(string action, SortedList<string, string> args, string merchantId, string merchantKey, string merchantSecret)
         {
-            //<?xml version="1.0" encoding="UTF-8"?>
-            //<Transaction>
-            //     <Action>
-            //          <Name>IDEAL.GETBANKS</Name>
-            //          <Version>1</Version>
-            //     </Action>
-            //     <Merchant>
-            //          <ID>[Uw merchant ID]</ID>
-            //          <Key>[Uw merchant key]</Key>
-            //          <Checksum>[De checksum]</Checksum>
-            //     </Merchant>
-            //</Transaction>
-
-            //ToDo: Change to XDocument! http://stackoverflow.com/questions/1542073/xdocument-or-xmldocument
-
-            var xmlDoc = new XmlDocument();
-            var transactionNode = (XmlElement)xmlDoc.AppendChild(xmlDoc.CreateElement("Transaction"));
-            
-            var actionNode = (XmlElement)transactionNode.AppendChild(xmlDoc.CreateElement("Action"));
-            actionNode.AppendChild(xmlDoc.CreateElement("Name")).InnerText = action;
-            actionNode.AppendChild(xmlDoc.CreateElement("Version")).InnerText = ApiVersion();
-
-            var merchantNode = (XmlElement)transactionNode.AppendChild(xmlDoc.CreateElement("Merchant"));
-            merchantNode.AppendChild(xmlDoc.CreateElement("ID")).InnerText = merchantId;
-            merchantNode.AppendChild(xmlDoc.CreateElement("Key")).InnerText = merchantKey;
-            merchantNode.AppendChild(xmlDoc.CreateElement("Checksum")).InnerText = getChecksum(args, merchantSecret);
+            var document = new XDocument(
+                           new XElement("Transaction",
+                                        new XElement("Action",
+                                                     new XElement("Name", action),
+                                                     new XElement("Version", ApiVersion())
+                                            ),
+                                        new XElement("Merchant",
+                                                     new XElement("ID", merchantId),
+                                                     new XElement("Key", merchantKey),
+                                                     new XElement("Checksum", getChecksum(args, merchantSecret))
+                                            )
+                               )
+                           ) { Declaration = new XDeclaration("1.0", "utf-8", "true") };
 
             if (args.Count > 0)
             {
-                var parametersNode = (XmlElement)transactionNode.AppendChild(xmlDoc.CreateElement("Parameters"));
+                var parameters = new XElement("Parameters");
                 foreach (var arg in args)
                 {
-                    parametersNode.AppendChild(xmlDoc.CreateElement(arg.Key)).InnerText = arg.Value;
+                    parameters.Add(new XElement(arg.Key, arg.Value));
                 }
+
+                if (document.Root != null) document.Root.Add(parameters);
             }
 
-            return xmlDoc.OuterXml;
+            return document.ToString();
         }
 
         public string postXML(string XMLData, string url)
