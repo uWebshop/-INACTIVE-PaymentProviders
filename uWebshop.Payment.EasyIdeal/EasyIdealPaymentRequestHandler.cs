@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
@@ -53,9 +52,9 @@ namespace uWebshop.Payment.EasyIdeal
             args.Add("Description", orderInfo.OrderNumber);
             args.Add("Return", returnUrl);
 
-            var xmlRequest = getXML(IDEAL_EXECUTE, args, merchantId, merchantKey, merchantSecret);
+            var xmlRequest = GetXml(IDEAL_EXECUTE, args, merchantId, merchantKey, merchantSecret);
 
-            XDocument xmlResponse = XDocument.Parse(postXML(xmlRequest, url));
+            XDocument xmlResponse = XDocument.Parse(PostXml(xmlRequest, url));
 
             var responseStatus = xmlResponse.Element("Response").Element("Status").FirstNode.ToString();
 

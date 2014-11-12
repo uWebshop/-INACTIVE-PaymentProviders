@@ -1,10 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Net;
-using System.Text;
 using System.Xml.Linq;
 using System.Web;
-using System.Web.Configuration;
 using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
@@ -24,7 +20,6 @@ namespace uWebshop.Payment.EasyIdeal
 		/// </summary>
         public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
 		{	
-
             #region config helper
 
             var merchantId = paymentProvider.GetSetting("merchantId");
@@ -70,18 +65,20 @@ namespace uWebshop.Payment.EasyIdeal
                 }
 
                 //check validity of request
-                if (checkChecksumPaymentStatus(transactionId, transactionCode, paymentStatus, salt, checksum)) //only check for payment status if request is valid.
+                if (CheckChecksumPaymentStatus(transactionId, transactionCode, paymentStatus, salt, checksum)) //only check for payment status if request is valid.
                     //This is a bit redundant, since you allready now the paymentStatus. But we could choose to do something with the extra info you get from this request e.g. IBAN
                 {
 
-                    var args = new SortedList<string, string>();
-                    args.Add("TransactionID", transactionId);
-                    args.Add("TransactionCode", transactionCode);
+                    var args = new SortedList<string, string>
+                        {
+                            {"TransactionID", transactionId},
+                            {"TransactionCode", transactionCode}
+                        };
 
 
-                    var xmlRequest = getXML(TRANSACTIONSTATUS, args, merchantId, merchantKey, merchantSecret);
+                    var xmlRequest = GetXml(TRANSACTIONSTATUS, args, merchantId, merchantKey, merchantSecret);
 
-                    XDocument xmlResponse = XDocument.Parse(postXML(xmlRequest, url));
+                    XDocument xmlResponse = XDocument.Parse(PostXml(xmlRequest, url));
 
                     var responseStatus = xmlResponse.Element("Response").Element("Status").FirstNode.ToString();
 

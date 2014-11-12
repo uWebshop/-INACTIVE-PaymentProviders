@@ -1,25 +1,14 @@
-﻿using log4net;
-using System.Reflection;
-using System.Xml;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using System.Net;
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using uWebshop.Common;
-using uWebshop.Domain;
-using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Payment.EasyIdeal
 {
     public class EasyIdealPaymentBase
 	{
-        private static readonly ILog Log =
-            LogManager.GetLogger(
-                MethodBase.GetCurrentMethod().DeclaringType
-            );
-
 		public string GetName()
 		{
             return "EasyIdeal";
