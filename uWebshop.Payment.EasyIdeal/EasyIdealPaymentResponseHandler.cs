@@ -22,6 +22,9 @@ namespace uWebshop.Payment.EasyIdeal
 		{	
             #region config helper
 
+         
+
+
             var merchantId = paymentProvider.GetSetting("merchantId");
 
             var merchantKey = paymentProvider.GetSetting("merchantKey");
@@ -30,10 +33,33 @@ namespace uWebshop.Payment.EasyIdeal
 
             var url = paymentProvider.GetSetting("url");
 
+            var transactionId = HttpContext.Current.Request["id"];
+
+		    
+
+            if (orderInfo == null)
+            {
+                orderInfo = OrderHelper.GetOrder(transactionId);
+            }
+
+
+            if (orderInfo == null)
+            {
+                Log.Instance.LogError("Easy iDeal response: Order Not Found For TransactionId: " + transactionId);
+
+                HttpContext.Current.Response.Redirect(paymentProvider.ErrorUrl());
+                return null;
+            }
+
+            // get the localized (for the right store) payment provider to get the right success/return urls
+            var localizedPaymentProvider = PaymentProvider.GetPaymentProvider(paymentProvider.Id, orderInfo.StoreInfo.Alias);
+
+            var redirectUrl = localizedPaymentProvider.ErrorUrl();
+            var successUrl = localizedPaymentProvider.SuccessUrl();
+
             #endregion
             try
             {
-                var transactionId = HttpContext.Current.Request["id"];
                 var paymentStatus = HttpContext.Current.Request["status"];
                 var salt = HttpContext.Current.Request["salt"];
                 var checksum = HttpContext.Current.Request["checksum"];
@@ -41,18 +67,13 @@ namespace uWebshop.Payment.EasyIdeal
                 if (string.IsNullOrEmpty(transactionId))
                 {
                     Log.Instance.LogError("Easy iDeal response: TransactionId IsNullOrEmpty");
+                    HttpContext.Current.Response.Redirect(paymentProvider.ErrorUrl());
                     return null;
                 }
-
-                if (orderInfo == null)
-                {
-                    Log.Instance.LogError("Easy iDeal response: Order Not Found For TransactionId: " + transactionId);
-                    return null;
-                }
-
                 if (orderInfo.Paid != false)
                 {
                     Log.Instance.LogDebug("Easy iDeal response: Order already paid! TransactionId: " + transactionId);
+                    HttpContext.Current.Response.Redirect(paymentProvider.ErrorUrl());
                     return null;
                 }
 
@@ -61,6 +82,7 @@ namespace uWebshop.Payment.EasyIdeal
                 if (string.IsNullOrEmpty(transactionCode))
                 {
                     Log.Instance.LogDebug("Easy iDeal response: OrderTransactionCode IsNullOrEmpty ");
+                    HttpContext.Current.Response.Redirect(paymentProvider.ErrorUrl());
                     return null;
                 }
 
@@ -79,7 +101,7 @@ namespace uWebshop.Payment.EasyIdeal
                     var xmlRequest = GetXml(TRANSACTIONSTATUS, args, merchantId, merchantKey, merchantSecret);
 
                     XDocument xmlResponse = XDocument.Parse(PostXml(xmlRequest, url));
-
+                    
                     var responseStatus = xmlResponse.Element("Response").Element("Status").FirstNode.ToString();
 
                     if (responseStatus == "OK")
@@ -88,6 +110,8 @@ namespace uWebshop.Payment.EasyIdeal
                         {
                             orderInfo.Paid = true;
                             orderInfo.Status = OrderStatus.ReadyForDispatch;
+                            redirectUrl = successUrl;
+
                         }
                         else
                         {
@@ -102,6 +126,8 @@ namespace uWebshop.Payment.EasyIdeal
             {
                 Log.Instance.LogError("EasyIdealPaymentResponseHandler.HandlePaymentResponse: " + ex);
             }
+
+            HttpContext.Current.Response.Redirect(redirectUrl);
 
             return orderInfo;
 		}

@@ -50,7 +50,7 @@ namespace uWebshop.Payment.EasyIdeal
             args.Add("Currency", "EUR");
             args.Add("Bank", orderInfo.PaymentInfo.MethodId);
             args.Add("Description", orderInfo.OrderNumber);
-            args.Add("Return", returnUrl);
+            args.Add("Return", reportUrl);
 
             var xmlRequest = GetXml(IDEAL_EXECUTE, args, merchantId, merchantKey, merchantSecret);
 
@@ -64,9 +64,10 @@ namespace uWebshop.Payment.EasyIdeal
 
             orderInfo.PaymentInfo.Url = bankUrl;
 
+		   
             PaymentProviderHelper.SetTransactionId(orderInfo, transactionId); //transactionCode hierin verwerken??
 
-           // IO.Container.Resolve<IOrderUpdatingService>().AddCustomerFields(order, new Dictionary<string, string>({ "extraBilling", value }), CustomerDatatypes.Extra);
+            //IO.Container.Resolve<IOrderUpdatingService>().AddCustomerFields(order, new Dictionary<string, string>({ "extraBilling", value }), CustomerDatatypes.Extra);
             orderInfo.AddCustomerFields(new Dictionary<string, string> { { "extraTransactionCode", transactionCode } }, Common.CustomerDatatypes.Extra);
             orderInfo.Save();
 
