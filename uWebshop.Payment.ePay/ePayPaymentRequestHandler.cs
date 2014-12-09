@@ -39,11 +39,12 @@ namespace uWebshop.Payment.ePay
 			request.Parameters.Add("amount", orderInfo.ChargedAmountInCents.ToString());
 			request.Parameters.Add("orderid", uniqueId);
 
-			request.Parameters.Add("callbackurl", reportUrl);
+			//request.Parameters.Add("callbackurl", reportUrl);
 			request.Parameters.Add("accepturl", reportUrl);
 			request.Parameters.Add("cancelurl", failedUrl);
 			request.Parameters.Add("currency", orderInfo.StoreInfo.Store.CurrencyCultureSymbol);
 			request.Parameters.Add("windowstate", "3");
+			request.Parameters.Add("ownreceipt", "1");
 			request.PaymentUrlBase = url;
 
 			PaymentProviderHelper.SetTransactionId(orderInfo, uniqueId);
