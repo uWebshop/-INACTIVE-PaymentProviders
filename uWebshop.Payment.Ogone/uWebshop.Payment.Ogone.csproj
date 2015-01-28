@@ -53,6 +53,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Binary Dependencies umbraco6\umbraco.dll</HintPath>
     </Reference>
+    <Reference Include="uWebshop.Common, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\uWebshop-Releases\builds\Umbraco Packages\uWebshop2.6.0.1.Foundation.Umbraco7.Package.Installer\uWebshop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="uWebshop.Domain, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\uWebshop-Releases\builds\Umbraco Packages\uWebshop2.6.0.1.Foundation.Umbraco7.Package.Installer\uWebshop.Domain.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OgonePaymentBase.cs" />
@@ -74,16 +82,6 @@
     <Content Include="uWebshopOgoneInstaller.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\uWebshop.Common\uWebshop.Common.csproj">
-      <Project>{61eef91b-22ed-48f0-83eb-cdc7431c5bde}</Project>
-      <Name>uWebshop.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\uWebshop.Domain\uWebshop.Domain.csproj">
-      <Project>{30ac1fb6-eb29-4e4e-92c4-0481c503215c}</Project>
-      <Name>uWebshop.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -27,7 +27,9 @@ namespace uWebshop.Payment.Ogone
 			var localizedPaymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id, orderInfo.StoreInfo.Alias);
 
 			var returnUrl = localizedPaymentProvider.SuccessUrl();
-			var cancelUrl = localizedPaymentProvider.ErrorUrl();
+			var errorUrl = localizedPaymentProvider.ErrorUrl();
+		    var cancelUrl = localizedPaymentProvider.CancelUrl();
+
 			var redirectUrl = returnUrl;
 
 			//0	Ongeldig of onvolledig
@@ -72,14 +74,19 @@ namespace uWebshop.Payment.Ogone
 			if (orderInfo.Paid == false)
 			{
 				switch (status)
-				{
+                {
+                    case "1":
+                        orderInfo.Paid = false;
+						orderInfo.Status = OrderStatus.PaymentFailed;
+						orderInfo.PaymentInfo.ErrorMessage = status;
+                        redirectUrl = cancelUrl;
+                        break;
 					case "5":
 					case "9":
 						orderInfo.Paid = true;
 						orderInfo.Status = OrderStatus.ReadyForDispatch;
 						break;
 					case "0":
-					case "1":
 					case "2":
 					case "61":
 					case "62":
@@ -93,7 +100,7 @@ namespace uWebshop.Payment.Ogone
 						orderInfo.Paid = false;
 						orderInfo.Status = OrderStatus.PaymentFailed;
 						orderInfo.PaymentInfo.ErrorMessage = status;
-						redirectUrl = cancelUrl;
+						redirectUrl = errorUrl;
 						break;
 					default:
 						orderInfo.Status = OrderStatus.WaitingForPaymentProvider;
