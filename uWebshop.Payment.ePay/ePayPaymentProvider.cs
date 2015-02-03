@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Interfaces;
@@ -17,16 +15,15 @@ namespace uWebshop.Payment.ePay
 		public IEnumerable<PaymentProviderMethod> GetAllPaymentMethods(int id)
 		{
 			var paymentProviderMethodList = new List<PaymentProviderMethod>
-			                                {
-				                                new PaymentProviderMethod
-				                                {
-					                                Id = "ePay", 
-													ProviderName = GetName(), 
-													Title = "ePay", 
-													Description = "ePay Payment Provider"
-				                                }
-			                                };
-
+			    {
+				    new PaymentProviderMethod
+				    {
+					    Id = "ePay", 
+						ProviderName = GetName(), 
+						Title = "ePay", 
+						Description = "ePay Payment Provider"
+				    }
+			    };
 			return paymentProviderMethodList;
 		}
 	}
