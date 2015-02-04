@@ -1,63 +1,66 @@
-﻿using System;
-using uWebshop.Domain;
+﻿using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 
 namespace uWebshop.Payment.ePay
 {
-	public class ePayPaymentRequestHandler : ePayPaymentBase, IPaymentRequestHandler
-	{
-		public PaymentRequest CreatePaymentRequest(OrderInfo orderInfo)
-		{
-			var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id, orderInfo.StoreInfo.Alias);
-			
-			var failedUrl = paymentProvider.ErrorUrl();
+    public class ePayPaymentRequestHandler : ePayPaymentBase, IPaymentRequestHandler
+    {
+        public PaymentRequest CreatePaymentRequest(OrderInfo orderInfo)
+        {
+            // reportUrl  - is a server-to-server call, changes order state, sends out e-mail
+            // successUrl - is a browser redirect, page is shown to the card holder after payment success, this is where you show a receipt
+            // errorUrl   - is a browser redirect, page is shown to the card holder if a payment error occured
 
-			var reportUrl = paymentProvider.ReportUrl();
-			
-			#region config helper
+            var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id, orderInfo.StoreInfo.Alias);
+            var errorUrl = paymentProvider.ErrorUrl();
+            var successUrl = paymentProvider.SuccessUrl();
+            var reportUrl = paymentProvider.ReportUrl();
 
-			var merchantnumber = paymentProvider.GetSetting("merchantnumber");
+            // payment provider configuration is made in ~\App_Plugins\uWebshop\config\PaymentProviders.config
+            // m5 secret is optional but recommended
+            //
+            // <provider title="ePay">
+            //   <merchantnumber>merchantnumber</accountId>
+            //   <secret>md5secret</secret>
+            //   <url>https://ssl.ditonlinebetalingssystem.dk/integration/ewindow/Default.aspx</url>
+            // </provider> 
 
-			var url = paymentProvider.GetSetting("url");
-			
-			var uniqueId = orderInfo.OrderNumber + "x" + DateTime.Now.ToString("hhmmss");
+            var merchantnumber = paymentProvider.GetSetting("merchantnumber");
+            var url = paymentProvider.GetSetting("url");
+            var secret = paymentProvider.GetSetting("secret");
 
-			Log.Instance.LogDebug("ePay uniqueId " + uniqueId + ", paymentProviderNodeId: " + paymentProvider.Id);
+            var request = new PaymentRequest();
+            request.Parameters.Add("merchantnumber", merchantnumber);
+            request.Parameters.Add("amount", orderInfo.ChargedAmountInCents.ToString());
+            request.Parameters.Add("orderid", orderInfo.OrderNumber);
+            request.Parameters.Add("callbackurl", reportUrl);       // server-to-server GET http://host/payment-providers/payment-providers/ePay?txnid=12345678&orderid=W0061..
+            request.Parameters.Add("accepturl", successUrl);        // browser-redirect GET http://host/receipt/?txnid=12345678&orderid=W0061..
+            request.Parameters.Add("cancelurl", errorUrl);
+            request.Parameters.Add("currency", orderInfo.StoreInfo.Store.CurrencyCultureSymbol);
+            request.Parameters.Add("windowstate", "3");
 
-			//<provider title="ePay">
-			//  <merchantnumber>#YOUR Merchant Number#</accountId>
-			//  <url>https://ssl.ditonlinebetalingssystem.dk/integration/ewindow/Default.aspx</url>
-			//</provider> 
+            //build MD5 if secret present
+            if (secret != string.Empty)
+            {
+                var values = string.Empty;
+                foreach (var parameter in request.Parameters)
+                {
+                    values += parameter.Value;
+                }
+                request.Parameters.Add("hash", ePayPaymentBase.MD5(values + secret));
+            }
+            request.PaymentUrlBase = url;
 
-			#endregion
+            PaymentProviderHelper.SetTransactionId(orderInfo, orderInfo.OrderNumber);
+            orderInfo.PaymentInfo.Url = request.PaymentUrl;
+            orderInfo.PaymentInfo.Parameters = request.ParametersAsString;
+            return request;
+        }
 
-			var request = new PaymentRequest();
-
-			// retrieve Account ID
-			request.Parameters.Add("merchantnumber", merchantnumber);
-			request.Parameters.Add("amount", orderInfo.ChargedAmountInCents.ToString());
-			request.Parameters.Add("orderid", uniqueId);
-
-			//request.Parameters.Add("callbackurl", reportUrl);
-			request.Parameters.Add("accepturl", reportUrl);
-			request.Parameters.Add("cancelurl", failedUrl);
-			request.Parameters.Add("currency", orderInfo.StoreInfo.Store.CurrencyCultureSymbol);
-			request.Parameters.Add("windowstate", "3");
-			request.Parameters.Add("ownreceipt", "1");
-			request.PaymentUrlBase = url;
-
-			PaymentProviderHelper.SetTransactionId(orderInfo, uniqueId);
-
-			orderInfo.PaymentInfo.Url = request.PaymentUrl;
-			orderInfo.PaymentInfo.Parameters = request.ParametersAsString;
-
-			return request;
-		}
-
-		public string GetPaymentUrl(OrderInfo orderInfo)
-		{
-			return orderInfo.PaymentInfo.Url;
-		}
-	}
+        public string GetPaymentUrl(OrderInfo orderInfo)
+        {
+            return orderInfo.PaymentInfo.Url;
+        }
+    }
 }
