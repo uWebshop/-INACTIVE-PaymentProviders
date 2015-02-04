@@ -59,10 +59,10 @@ namespace uWebshop.Payment.ePay
                         Log.Instance.LogError("Payment provider (ePay) error : Orderid " + orderId + " - incoming amount " + amount.ToString() + " - order amount " + orderInfo.ChargedAmountInCents.ToString());
                     }
                 }
-                HttpContext.Current.Response.Clear();
-                HttpContext.Current.Response.Write("OK");
-                HttpContext.Current.Response.Flush();
             }
+            HttpContext.Current.Response.Clear();
+            HttpContext.Current.Response.Write("OK");
+            HttpContext.Current.Response.Flush();
             return orderInfo;
         }
     }
