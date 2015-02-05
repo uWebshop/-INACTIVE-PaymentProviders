@@ -1,4 +1,5 @@
-﻿using uWebshop.Domain;
+﻿using System.Text;
+using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
 using uWebshop.Domain.Interfaces;
 
@@ -43,12 +44,12 @@ namespace uWebshop.Payment.ePay
             //build MD5 if secret present
             if (secret != string.Empty)
             {
-                var values = string.Empty;
+                var sb = new StringBuilder();
                 foreach (var parameter in request.Parameters)
                 {
-                    values += parameter.Value;
+                    sb.Append(parameter.Value);
                 }
-                request.Parameters.Add("hash", ePayPaymentBase.MD5(values + secret));
+                request.Parameters.Add("hash", ePayPaymentBase.MD5(sb.ToString() + secret));
             }
             request.PaymentUrlBase = url;
 

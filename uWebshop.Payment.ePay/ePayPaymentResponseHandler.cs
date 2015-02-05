@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Text;
+using System.Web;
 using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
@@ -25,15 +26,15 @@ namespace uWebshop.Payment.ePay
                 var validated = true;
                 if (secret != string.Empty)
                 {
-                    var values = string.Empty;
+                    var sb = new StringBuilder();
                     foreach (var key in HttpContext.Current.Request.QueryString.AllKeys)
                     {
                         if (key != "hash")
                         {
-                            values += HttpContext.Current.Request.QueryString[key];
+                            sb.Append(HttpContext.Current.Request.QueryString[key]);
                         }
                     }
-                    var calculated = ePayPaymentBase.MD5(values + secret).ToUpperInvariant();
+                    var calculated = ePayPaymentBase.MD5(sb.ToString() + secret).ToUpperInvariant();
                     var incoming = (HttpContext.Current.Request.QueryString["hash"] ?? "").ToUpperInvariant();
                     validated = calculated == incoming;
                     if (!validated)

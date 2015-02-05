@@ -16,12 +16,12 @@ namespace uWebshop.Payment.ePay
             return ByteArrayToString(hashedDataBytes);
         }
 
-        private static string ByteArrayToString(byte[] inputArray)
+        private static string ByteArrayToString(byte[] array)
         {
-            var sb = new StringBuilder();
-            for (var i = 0; i < inputArray.Length; i++)
+            var sb = new StringBuilder(array.Length * 2);
+            for (var i = 0; i < array.Length; i++)
             {
-                sb.Append(inputArray[i].ToString("X2"));
+                sb.Append(array[i].ToString("X2"));
             }
             return sb.ToString();
         }
