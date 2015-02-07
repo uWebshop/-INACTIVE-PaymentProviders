@@ -12,7 +12,6 @@ namespace uWebshop.Payment.ePay
         public OrderInfo HandlePaymentResponse(PaymentProvider paymentProvider, OrderInfo orderInfo)
         {
             var orderId = HttpContext.Current.Request.QueryString["orderid"] ?? "";
-            var transactionId = HttpContext.Current.Request.QueryString["txnid"] ?? "0";
             if (paymentProvider == null || string.IsNullOrEmpty(orderId))
             {
                 return null;
