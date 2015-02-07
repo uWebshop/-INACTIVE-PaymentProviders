@@ -15,15 +15,15 @@ namespace uWebshop.Payment.ePay
             // errorUrl   - is a browser redirect, page is shown to card holder if a payment error occured
             //
             // parameters http://tech.epay.dk/da/betalingsvindue-parametre
-            // md5 secret is optional but recommended
             //
             // payment provider configuration is made in ~\App_Plugins\uWebshop\config\PaymentProviders.config
             // example:
             // <provider title="ePay">
             //   <merchantnumber>12345678</merchantnumber>
+            //   <url>https://ssl.ditonlinebetalingssystem.dk/integration/ewindow/Default.aspx</url>
+            //   ..
             //   <secret>xc78ekjY3H!K</secret>
             //   <language>0</language>
-            //   <url>https://ssl.ditonlinebetalingssystem.dk/integration/ewindow/Default.aspx</url>
             // </provider> 
 
             var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id, orderInfo.StoreInfo.Alias);
@@ -43,24 +43,23 @@ namespace uWebshop.Payment.ePay
             foreach (var setting in settings.Descendants())
             {
                 var key = setting.Name.LocalName.ToLowerInvariant();
-                if (!request.Parameters.ContainsKey(key) && !string.IsNullOrEmpty(setting.Value) && (!filter.Contains(key)))
+                if (!string.IsNullOrEmpty(setting.Value) && !request.Parameters.ContainsKey(key) && !filter.Contains(key))
                 {
                     request.Parameters.Add(key, setting.Value);
                 }
             }
+            request.PaymentUrlBase = settings.Element("url").Value;
 
             //build MD5 if secret present
-            var secret = paymentProvider.GetSetting("secret");
-            if (secret != string.Empty)
+            if (settings.Element("secret") != null)
             {
                 var sb = new StringBuilder();
                 foreach (var parameter in request.Parameters)
                 {
                     sb.Append(parameter.Value);
                 }
-                request.Parameters.Add("hash", ePayPaymentBase.MD5(sb.ToString() + secret));
+                request.Parameters.Add("hash", ePayPaymentBase.MD5(sb.ToString() + settings.Element("secret").Value));
             }
-            request.PaymentUrlBase = paymentProvider.GetSetting("url");
 
             PaymentProviderHelper.SetTransactionId(orderInfo, orderInfo.OrderNumber);
             orderInfo.PaymentInfo.Url = request.PaymentUrl;
