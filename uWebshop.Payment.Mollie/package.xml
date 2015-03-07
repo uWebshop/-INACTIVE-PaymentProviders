@@ -31,10 +31,10 @@
             The provider will forward the customer to Mollie to make the payment when they confirm the order.
             
             In the root of your Umbraco site you'll find the "config" folder. Inside this folder is a "uWebshop" folder.
-            There you will find the "uwbsPayment.config" file. 
+            There you will find the "PaymentProviders.config" file. 
             (We advise the config folder package to be able to view config files from the umbraco backend)
             
-            You should add the following lines to the uwbsPaymnet.config file:
+            You should add the following lines to the PaymentProviders.config file:
             
             <provider title="Mollie">
               <PSPID>#YOUR PSID#</PSPID>
