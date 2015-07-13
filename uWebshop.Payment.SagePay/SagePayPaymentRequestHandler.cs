@@ -183,7 +183,7 @@ namespace uWebshop.Payment.SagePay
             request.Parameters.Add("CV2", paymentProvider.TestMode ? "123" : creditCardCV2);
             request.Parameters.Add("ExpiryDate", paymentProvider.TestMode ? DateTime.Now.AddMonths(6).ToString("MMyy") : creditCardExpiryDate);
 
-            request.Parameters.Add("VPSProtocol", "2.23");
+            request.Parameters.Add("VPSProtocol", "3.00");
             request.Parameters.Add("TxType", "PAYMENT");
             request.Parameters.Add("Vendor", vendorName);
 
