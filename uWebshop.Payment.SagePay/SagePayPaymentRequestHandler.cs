@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Web;
+using SagePay.IntegrationKit;
+using SagePay.IntegrationKit.Messages;
 using uWebshop.Common;
 using uWebshop.Domain;
 using uWebshop.Domain.Helpers;
@@ -13,6 +17,36 @@ using Log = uWebshop.Domain.Log;
 
 namespace uWebshop.Payment.SagePay
 {
+	public class SagePayAPIIntegration : SagePayIntegration
+	{
+		static Random Random = new Random();
+
+		public static string GetNewVendorTxCode()
+		{
+			var ts = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+			// 18 char max -13 chars - 6 chars
+			return string.Format("{0}-{1}-{2}",
+				SagePaySettings.VendorName.Substring(0, Math.Min(18, SagePaySettings.VendorName.Length)),
+				(long)ts.TotalMilliseconds, Random.Next(100000, 999999));
+		}
+
+		public static string GetNewRelatedVtx(string pref, string vtx)
+		{
+			var ts = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+			return string.Format("{0}{1}-{2}{3}", pref, vtx.Substring(0, 15), (long)ts.TotalMilliseconds, RandomString(3));
+		}
+
+		public static string RandomString(int length)
+		{
+			var sb = new StringBuilder();
+			for (var i = 0; i < length; i++)
+			{
+				sb.Append(Convert.ToChar(Random.Next(65, 90)));
+			}
+			return sb.ToString();
+		}
+	}
+	
     public class SagePayPaymentRequestHandler : IPaymentRequestHandler
     {
         private readonly IHttpRequestSender _requestSender;
@@ -31,6 +65,8 @@ namespace uWebshop.Payment.SagePay
         {
             return "SagePay";
         }
+
+		public string Crypt { get; set; }
         
         /// <summary>
         /// Executes the transaction request to SagePay
@@ -39,220 +75,86 @@ namespace uWebshop.Payment.SagePay
         /// <returns></returns>
         public PaymentRequest CreatePaymentRequest(OrderInfo orderInfo)
         {
-            // new API Call for easier access to date (but not able to write to)
-            var orderAPI = API.Basket.GetBasket(orderInfo.UniqueOrderId);
+			var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
 
-            var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
-          
-            #region config helper
+		var sagePayDirectIntegration = new SagePayDirectIntegration();
 
-            var vendorName = paymentProvider.GetSetting("VendorName");
+			var request = sagePayDirectIntegration.DirectPaymentRequest();
+			SetRequestData(request, orderInfo);
 
-            var liveUrl = "https://live.sagepay.com/gateway/service/vspdirect-register.vsp";
-            var testUrl = "https://test.sagepay.com/Simulator/VSPDirectGateway.asp";
+			var result = sagePayDirectIntegration.ProcessDirectPaymentRequest(request, SagePaySettings.DirectPaymentUrl);
 
-            var configLiveUrl = paymentProvider.GetSetting("Url");
-            var configTestUrl = paymentProvider.GetSetting("testUrl");
+			if (result.Status == ResponseStatus.OK || (SagePaySettings.DefaultTransactionType == TransactionType.AUTHENTICATE && result.Status == ResponseStatus.REGISTERED))
+			{
+				orderInfo.PaymentInfo.Parameters = result.Status + "&" + result.StatusDetail;
 
-            if (!string.IsNullOrEmpty(configLiveUrl))
-            {
-                liveUrl = configLiveUrl;
-            }
-            if (!string.IsNullOrEmpty(configTestUrl))
-            {
-                testUrl = configTestUrl;
-            }
+				PaymentProviderHelper.SetTransactionId(orderInfo, result.VpsTxId);
+				//Response.Redirect(string.Format("Result.aspx?vendorTxCode={0}", request.VendorTxCode));
+			}
+			else if (result.Status == ResponseStatus.THREEDAUTH)
+			{
+				// todo: not supported yet! code below is work in progress
+				//var threeDSecureRequest = new PaymentRequest();
 
-            #endregion
+				//threeDSecureRequest.Parameters.Add("paReq", result.PaReq.Replace(" ", "+"));
+				//threeDSecureRequest.Parameters.Add("acsUrl", result.AcsUrl);
+				//threeDSecureRequest.Parameters.Add("md", result.Md);
+				//threeDSecureRequest.Parameters.Add("vendorTxCode", request.VendorTxCode);
+				
+				//// Save Order with Order status in 3D Process
+				//var threeDAuth = new NameValueCollection
+				//{
+				//	{"paReq", result.PaReq.Replace(" ", "+")},
+				//	{"acsUrl", result.AcsUrl},
+				//	{"md", result.Md},
+				//	{"vendorTxCode", request.VendorTxCode}
+				//};
+				//if (HttpContext.Current.Session["USER_3DAUTH"] != null)
+				//{
+				//	HttpContext.Current.Session["USER_3DAUTH"] = null;
+				//}
+				//HttpContext.Current.Session.Add("USER_3DAUTH", threeDAuth);
+				
+				////<form action="<%= ACSUrl %>" method="post">
+				////<input type="hidden" name="PaReq" value="<%= PaReq %>" />
+				////<input type="hidden" name="TermUrl" value="<%= TermUrl %>" />
+				////<input type="hidden" name="MD" value="<%= MD %>" />
+				////<input type="submit" value="Go" />
+				////</form>
 
-            var reportUrl = paymentProvider.ReportUrl();
+				//var responseString = _requestSender.SendRequest(result.AcsUrl, threeDSecureRequest.ParametersAsString);
+				
 
-            var request = new PaymentRequest();
+				//var threeDAuthRequest = sagePayDirectIntegration.ThreeDAuthRequest();
+				//threeDAuthRequest.Md = Request.Form["MD"];
+				//threeDAuthRequest.PaRes = Request.Form["PaRes"];
+				//var directPaymentResult = sagePayDirectIntegration.ProcessDirect3D(threeDAuthRequest);
 
-            var cardTypeMethod = orderInfo.PaymentInfo.MethodId;
+				//if (directPaymentResult.Status == ResponseStatus.OK)
+				//{
+				//	orderInfo.Paid = true;
+				//	orderInfo.Status = OrderStatus.ReadyForDispatch;
+				//}
+				//else
+				//{
 
-            // Get the fields from the current request, this way they won't be stored in the order or in uWebshop
-            var creditCardHolderName = HttpContext.Current.Request["CardHolder"];
-            var creditCardNumber = HttpContext.Current.Request["CardNumber"];
-            var creditCardCV2 = HttpContext.Current.Request["CV2"];
-            var creditCardExpiryDate = HttpContext.Current.Request["ExpiryDate"];
+				//	Log.Instance.LogError("SagePay Did not return a proper directPaymentResult status: " + directPaymentResult.StatusDetail);
+				//	PaymentProviderHelper.AddValidationResult(orderInfo, orderInfo.PaymentInfo.Id, "SagePayReturnedError", directPaymentResult.StatusDetail);
+				//}
 
-            if (string.IsNullOrEmpty(creditCardHolderName))
-            {
-                // if no creditCardHolder field is posted, try to see if the order contains an holder field
-                creditCardHolderName = orderAPI.Customer.GetValue<string>("customerCardHolder");
 
-                if (string.IsNullOrEmpty(creditCardHolderName))
-                {
-                    // if that is not present, use first letter of firstName and full last name
-                    creditCardHolderName = orderInfo.CustomerFirstName.Substring(0, 1) + " " +
-                                           orderInfo.CustomerLastName;
-                }
-            }
+			}
+			else
+			{
+				Log.Instance.LogError("SagePay Did not return a proper status: " + result.StatusDetail);
+				PaymentProviderHelper.AddValidationResult(orderInfo, orderInfo.PaymentInfo.Id, "SagePayReturnedError", result.StatusDetail);
+				
+			}
 
-            if (string.IsNullOrEmpty(creditCardNumber))
-            {
-                // if no creditCardNumber field is posted, try to see if the order contains an creditcardnumber
-                creditCardNumber = orderAPI.Customer.GetValue<string>("customerCardNumber");
+         
+			orderInfo.Save();
 
-                if (cardTypeMethod.ToLowerInvariant() != "paypal" &&
-                    (string.IsNullOrEmpty(creditCardNumber) && !paymentProvider.TestMode))
-                {
-                    Log.Instance.LogError("Sagepay CreatePaymentRequest: No Creditcardnumber Given");
-                    
-                    PaymentProviderHelper.AddValidationResult(orderInfo, paymentProvider.Id, "CreditCardError", "No Creditcardnumber Entered");
-                    
-                    return null;
-                }
-            }
-
-            if (string.IsNullOrEmpty(creditCardCV2))
-            {
-                // if no creditCardNumber field is posted, try to see if the order contains an creditcardnumber
-                creditCardCV2 = orderAPI.Customer.GetValue<string>("customerCardCV2");
-
-                if (cardTypeMethod.ToLowerInvariant() != "paypal" && string.IsNullOrEmpty(creditCardCV2) && !paymentProvider.TestMode)
-                {
-                    Log.Instance.LogError("Sagepay CreatePaymentRequest: No CV2 Given");
-                    
-                    PaymentProviderHelper.AddValidationResult(orderInfo, paymentProvider.Id, "CV2Error", "No CV2 Entered");
-
-                    return null;
-                }
-            }
-
-            if (string.IsNullOrEmpty(creditCardExpiryDate))
-            {
-                // if no ExpiryDate field is posted, try to see if the order contains an expirydate
-                creditCardExpiryDate = orderAPI.Customer.GetValue<string>("customerCardExpiryDate");
-
-                if (cardTypeMethod.ToLowerInvariant() != "paypal" && string.IsNullOrEmpty(creditCardExpiryDate) && !paymentProvider.TestMode)
-                {
-                    Log.Instance.LogError("Sagepay CreatePaymentRequest: No creditCardExpiryDate Given");
-                    
-                    PaymentProviderHelper.AddValidationResult(orderInfo, paymentProvider.Id, "CardExpiryDateError", "No CardExpiryDate Entered");
-
-                    return null;
-                }
-            }
-            
-            // Preset Valid test creditcardnumbers for testmode
-            if (paymentProvider.TestMode)
-            {
-                switch (cardTypeMethod.ToUpperInvariant())
-                {
-                    case "VISA":
-                        creditCardNumber = "4929000000006";
-                        break;
-                    case "MC":
-                        creditCardNumber = "5404000000000001";
-                        break;
-                    case "MCDEBIT":
-                        creditCardNumber = "5573470000000001";
-                        break;
-                    case "DELTA":
-                        creditCardNumber = "4462000000000003";
-                        break;
-                    case "MAESTRO":
-                        creditCardNumber = "5641820000000005";
-                        break;
-                    case "UKE":
-                        creditCardNumber = "4917300000000008";
-                        break;
-                    case "AMEX":
-                        creditCardNumber = "374200000000004";
-                        break;
-                    case "DINERS":
-                        creditCardNumber = "36000000000008";
-                        break;
-                    case "DC":
-                        creditCardNumber = "4929000000006";
-                        break;
-                    case "JCB":
-                        creditCardNumber = "3569990000000009";
-                        break;
-                    case "LASER":
-                        creditCardNumber = "6304990000000000044";
-                        break;
-                }
-            }
-
-            request.Parameters.Add("CardType", cardTypeMethod);
-            request.Parameters.Add("CardHolder", paymentProvider.TestMode ? "T.Ester" : creditCardHolderName);
-            request.Parameters.Add("CardNumber", creditCardNumber);
-            request.Parameters.Add("CV2", paymentProvider.TestMode ? "123" : creditCardCV2);
-            request.Parameters.Add("ExpiryDate", paymentProvider.TestMode ? DateTime.Now.AddMonths(6).ToString("MMyy") : creditCardExpiryDate);
-
-            request.Parameters.Add("VPSProtocol", "3.00");
-            request.Parameters.Add("TxType", "PAYMENT");
-            request.Parameters.Add("Vendor", vendorName);
-
-            var trasactionId = orderInfo.OrderNumber + "x" + DateTime.Now.ToString("hhmmss");
-
-            request.Parameters.Add("VendorTxCode", trasactionId);
-
-            request.Parameters.Add("Amount", orderInfo.ChargedAmount.ToString(new CultureInfo("en-GB").NumberFormat));
-            request.Parameters.Add("Currency", new RegionInfo(orderInfo.StoreInfo.Store.CurrencyCultureInfo.LCID).ISOCurrencySymbol);
-
-            request.Parameters.Add("Description", orderInfo.OrderNumber);
-
-            request.Parameters.Add("NotificationURL", reportUrl);
-
-            request.Parameters.Add("BillingSurname", GetSagePaySafeCustomerInfo(orderAPI.Customer.LastName));
-            request.Parameters.Add("BillingFirstnames", GetSagePaySafeCustomerInfo(orderAPI.Customer.FirstName));
-            request.Parameters.Add("BillingAddress1", GetSagePaySafeCustomerInfo(orderAPI.Customer.Address1));
-            request.Parameters.Add("BillingCity", GetSagePaySafeCustomerInfo(orderAPI.Customer.City));
-            request.Parameters.Add("BillingPostCode", GetSagePaySafeCustomerInfo(orderAPI.Customer.ZipCode));
-            request.Parameters.Add("BillingCountry", GetSagePaySafeCustomerInfo(orderInfo.CustomerInfo.CountryCode));
-
-            var deliverySurName = string.IsNullOrEmpty(orderAPI.Customer.Shipping.LastName) ? orderAPI.Customer.LastName : orderAPI.Customer.Shipping.LastName;
-            var deliveryFirstName = string.IsNullOrEmpty(orderAPI.Customer.Shipping.FirstName) ? orderAPI.Customer.FirstName : orderAPI.Customer.Shipping.FirstName;
-            var deliveryAddress1 = string.IsNullOrEmpty(orderAPI.Customer.Shipping.Address1) ? orderAPI.Customer.Address1 : orderAPI.Customer.Shipping.Address1;
-            var deliveryPostcode = string.IsNullOrEmpty(orderAPI.Customer.Shipping.ZipCode) ? orderAPI.Customer.ZipCode : orderAPI.Customer.Shipping.ZipCode;
-            var deliveryCity = string.IsNullOrEmpty(orderAPI.Customer.Shipping.City) ? orderAPI.Customer.City : orderAPI.Customer.Shipping.City;
-            var deliveryCountry = string.IsNullOrEmpty(orderAPI.Customer.Shipping.CountryCode) ? orderAPI.Customer.CountryCode : orderAPI.Customer.Shipping.CountryCode;
-            
-            request.Parameters.Add("DeliverySurname", GetSagePaySafeCustomerInfo(deliverySurName));
-            request.Parameters.Add("DeliveryFirstnames", GetSagePaySafeCustomerInfo(deliveryFirstName));
-            request.Parameters.Add("DeliveryAddress1", GetSagePaySafeCustomerInfo(deliveryAddress1));
-            request.Parameters.Add("DeliveryCity", GetSagePaySafeCustomerInfo(deliveryCity));
-            request.Parameters.Add("DeliveryPostCode", GetSagePaySafeCustomerInfo(deliveryPostcode));
-            request.Parameters.Add("DeliveryCountry", GetSagePaySafeCustomerInfo(deliveryCountry));
-
-            // optionele parameters:
-            //request.Parameters.Add("BillingAddress2", "");
-            //request.Parameters.Add("BillingState", "");
-            //request.Parameters.Add("BillingPhone", "");
-            //request.Parameters.Add("DeliveryAddress2", "");
-            //request.Parameters.Add("DeliveryState", "");
-            //request.Parameters.Add("DeliveryPhone", "");
-            //request.Parameters.Add("CustomerEMail", "");
-            //request.Parameters.Add("Basket", ""); // optioneel info over basket
-            //request.Parameters.Add("AllowGiftAid", "0");
-            //request.Parameters.Add("Apply3DSecure", "0");
-
-            var sagePayUrl = paymentProvider.TestMode ? testUrl : liveUrl;
-            var responseString = _requestSender.SendRequest(sagePayUrl, request.ParametersAsString);
-
-            var deserializer = new ResponseSerializer();
-            var response = deserializer.Deserialize<TransactionRegistrationResponse>(responseString);
-
-            if (!string.IsNullOrEmpty(response.VPSTxId) && response.Status == ResponseType.Ok)
-            {
-                orderInfo.PaymentInfo.Parameters = response.Status + "&" + response.StatusDetail;
-
-                PaymentProviderHelper.SetTransactionId(orderInfo, response.VPSTxId);
-            }
-            else
-            {
-                Log.Instance.LogError("SagePay Did not return a proper status: " + response.Status + " detail: " + response.StatusDetail);
-
-                PaymentProviderHelper.AddValidationResult(orderInfo, paymentProvider.Id, "SagePayReturnedError", response.StatusDetail);
-            }
-
-            orderInfo.Save();
-
-            return request;
+	        return new PaymentRequest();
         }
 
         private string GetSagePaySafeCustomerInfo(string value)
@@ -274,179 +176,110 @@ namespace uWebshop.Payment.SagePay
             return paymentProvider.ErrorUrl();
         }
 
-       
-        private class TransactionRegistrationResponse
-        {
-            /// <summary>
-            /// Protocol version
-            /// </summary>
-            public string VPSProtocol { get; set; }
+		private void SetRequestData(IDirectPayment request, OrderInfo orderInfo)
+		{
+			 // API Call for easier access (but not able to write to)
+            var basket = API.Basket.GetBasket(orderInfo.UniqueOrderId);
 
-            /// <summary>
-            /// Status
-            /// </summary>
-            public ResponseType Status { get; set; }
+			var paymentProvider = PaymentProvider.GetPaymentProvider(orderInfo.PaymentInfo.Id);
 
-            /// <summary>
-            /// Additional status details
-            /// </summary>
-            public string StatusDetail { get; set; }
+			var vendorName = paymentProvider.GetSetting("VendorName");
+			
+			request.VpsProtocol = SagePaySettings.ProtocolVersion;
+			request.TransactionType = SagePaySettings.DefaultTransactionType;
+			request.Vendor = SagePaySettings.VendorName;
 
-            /// <summary>
-            /// Transaction ID generated by SagePay
-            /// </summary>
-            public string VPSTxId { get; set; }
+			//Assign Vendor tx Code.
+			request.VendorTxCode = SagePayAPIIntegration.GetNewVendorTxCode();
+			
+			request.Amount = orderInfo.ChargedAmount;
+			request.Currency = new RegionInfo(orderInfo.StoreInfo.Store.CurrencyCultureInfo.LCID).ISOCurrencySymbol;
+			request.Description = orderInfo.OrderNumber + " " + vendorName;
+			request.CustomerEmail = GetSagePaySafeCustomerInfo(basket.Customer.Email);
 
-            /// <summary>
-            /// Security Key
-            /// </summary>
-            public string SecurityKey { get; set; }
+			request.BillingSurname =GetSagePaySafeCustomerInfo(basket.Customer.LastName);
+			request.BillingFirstnames = GetSagePaySafeCustomerInfo(basket.Customer.FirstName);
+			request.BillingAddress1 = GetSagePaySafeCustomerInfo(basket.Customer.Address1);
+			request.BillingPostCode = GetSagePaySafeCustomerInfo(basket.Customer.ZipCode);
+			request.BillingCity = GetSagePaySafeCustomerInfo(basket.Customer.City);
+			request.BillingCountry = string.IsNullOrEmpty(basket.Customer.Country) ? "GB" : basket.Customer.Country;
 
-            /// <summary>
-            /// Redirect URL
-            /// </summary>
-            public string NextURL { get; set; }
+			request.DeliverySurname = GetSagePaySafeCustomerInfo(basket.Customer.Shipping.LastName);
+			request.DeliveryFirstnames = GetSagePaySafeCustomerInfo(basket.Customer.Shipping.FirstName);
+			request.DeliveryAddress1 = GetSagePaySafeCustomerInfo(basket.Customer.Shipping.Address1);
+			request.DeliveryPostCode = GetSagePaySafeCustomerInfo(basket.Customer.Shipping.ZipCode);
+			request.DeliveryCity = GetSagePaySafeCustomerInfo(basket.Customer.Shipping.City);
+			request.DeliveryCountry = string.IsNullOrEmpty(basket.Customer.Shipping.Country) ? "GB" : basket.Customer.Shipping.Country;
 
-            public string TxAuthNo { get; set; }
-            public string AVSCV2 { get; set; }
-            public string AddressResult { get; set; }
-            public string PostCodeResult { get; set; }
-            public string CV2Result { get; set; }
-            public string ThreeDSecureStatus { get; set; }
-            public string CAVV { get; set; }
-        }
 
-        private enum ResponseType
-        {
-            Unknown,
-            Ok,
-            NotAuthed,
-            Abort,
-            Rejected,
-            Authenticated,
-            Registered,
-            Malformed,
-            Error,
-            Invalid,
-        }
+			var useToken = false;
+			bool.TryParse(HttpContext.Current.Request["useToken"], out useToken);
 
-        private class ResponseSerializer
-        {
-            /// <summary>
-            /// Deserializes the response into an instance of type T.
-            /// </summary>
-            public void Deserialize<T>(string input, T objectToDeserializeInto)
-            {
-                Deserialize(typeof(T), input, objectToDeserializeInto);
-            }
 
-            /// <summary>
-            /// Deserializes the response into an object of type T.
-            /// </summary>
-            public T Deserialize<T>(string input) where T : new()
-            {
-                var instance = new T();
-                Deserialize(typeof(T), input, instance);
-                return instance;
-            }
+			
+			var cardTypeMethod = orderInfo.PaymentInfo.MethodId;
+			var creditCardNumber = string.Empty;
 
-            /// <summary>
-            /// Deserializes the response into an object of the specified type.
-            /// </summary>
-            private void Deserialize(Type type, string input, object objectToDeserializeInto)
-            {
-                if (string.IsNullOrEmpty(input)) return;
+			if (paymentProvider.TestMode)
+			{
+				switch (cardTypeMethod.ToUpperInvariant())
+				{
+					case "VISA":
+						creditCardNumber = "4929000000006";
+						break;
+					case "MC":
+						creditCardNumber = "5404000000000001";
+						break;
+					case "MCDEBIT":
+						creditCardNumber = "5573470000000001";
+						break;
+					case "DELTA":
+						creditCardNumber = "4462000000000003";
+						break;
+					case "MAESTRO":
+						creditCardNumber = "5641820000000005";
+						break;
+					case "UKE":
+						creditCardNumber = "4917300000000008";
+						break;
+					case "AMEX":
+						creditCardNumber = "374200000000004";
+						break;
+					case "DINERS":
+						creditCardNumber = "36000000000008";
+						break;
+					case "DC":
+						creditCardNumber = "4929000000006";
+						break;
+					case "JCB":
+						creditCardNumber = "3569990000000009";
+						break;
+					case "LASER":
+						creditCardNumber = "6304990000000000044";
+						break;
+				}
+			}
+			else
+			{
+				creditCardNumber = HttpContext.Current.Request["cardNumber"];
+			}
 
-                var bits = input.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var nameValuePairCombined in bits)
-                {
-                    var index = nameValuePairCombined.IndexOf('=');
-                    var name = nameValuePairCombined.Substring(0, index);
-                    var value = nameValuePairCombined.Substring(index + 1);
-
-                    if (name == "3DSecureStatus") name = "ThreeDSecureStatus";
-
-                    var prop = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
-
-                    if (prop == null)
-                    {
-                        Log.Instance.LogError("SagePay Payment Provider Error: " + string.Format("Could not find a property on Type '{0}' named '{1}'", type.Name, name));
-                        throw new InvalidOperationException(string.Format("Could not find a property on Type '{0}' named '{1}'", type.Name, name));
-                    }
-
-                    //TODO: Investigate building a method of defining custom serializers
-
-                    object convertedValue = prop.PropertyType == typeof(ResponseType) ? ConvertStringToSagePayResponseType(value) : Convert.ChangeType(value, prop.PropertyType);
-
-                    prop.SetValue(objectToDeserializeInto, convertedValue, null);
-                }
-            }
-
-            /// <summary>
-            /// Deserializes the response into an object of the specified type.
-            /// </summary>
-            public object Deserialize(Type type, string input)
-            {
-                var instance = Activator.CreateInstance(type);
-                Deserialize(type, input, instance);
-                return instance;
-            }
-
-            /// <summary>
-            /// Utility method for converting a string into a ResponseType. 
-            /// </summary>
-            private static ResponseType ConvertStringToSagePayResponseType(string input)
-            {
-                if (!string.IsNullOrEmpty(input))
-                {
-                    if (input.StartsWith("OK"))
-                    {
-                        return ResponseType.Ok;
-                    }
-
-                    if (input.StartsWith("NOTAUTHED"))
-                    {
-                        return ResponseType.NotAuthed;
-                    }
-
-                    if (input.StartsWith("ABORT"))
-                    {
-                        return ResponseType.Abort;
-                    }
-
-                    if (input.StartsWith("REJECTED"))
-                    {
-                        return ResponseType.Rejected;
-                    }
-
-                    if (input.StartsWith("MALFORMED"))
-                    {
-                        return ResponseType.Malformed;
-                    }
-
-                    if (input.StartsWith("AUTHENTICATED"))
-                    {
-                        return ResponseType.Authenticated;
-                    }
-
-                    if (input.StartsWith("INVALID"))
-                    {
-                        return ResponseType.Invalid;
-                    }
-
-                    if (input.StartsWith("REGISTERED"))
-                    {
-                        return ResponseType.Registered;
-                    }
-
-                    if (input.StartsWith("ERROR"))
-                    {
-                        return ResponseType.Error;
-                    }
-                }
-                return ResponseType.Unknown;
-            }
-        }
+			// uWebshop does not store card data, therefore the data is taken from the current Request
+			if (useToken == false)
+			{
+				request.CardType = (CardType)Enum.Parse(typeof(CardType), cardTypeMethod);
+				request.CardHolder = paymentProvider.TestMode ? "T.Ester" : HttpContext.Current.Request["cardHolder"];
+				request.CardNumber = creditCardNumber;
+				//request.StartDate = HttpContext.Current.Request["cardStartDate"];
+				request.ExpiryDate = paymentProvider.TestMode ? DateTime.Now.AddMonths(6).ToString("MMyy") : HttpContext.Current.Request["cardExpiryDate"];
+				request.Cv2 = paymentProvider.TestMode ? "123" : HttpContext.Current.Request["cardCV2"]; ;
+			}
+			else
+			{
+				request.Token = HttpContext.Current.Request["cardToken"];
+				request.Cv2 = paymentProvider.TestMode ? "123" : HttpContext.Current.Request["cardCV2"]; ;
+				request.StoreToken = 1;
+			}
+		}
     }
 }

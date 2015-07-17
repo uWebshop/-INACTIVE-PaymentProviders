@@ -1,0 +1,155 @@
+﻿<?xml version="1.0"?>
+
+<providers>
+	<provider title="SagePay">
+		<Services>
+			<Service name="CreditCard">
+				<Issuers>
+					<Issuer code="VISA" name="VISA Credit"></Issuer>
+					<Issuer code="DELTA" name="VISA Debit"></Issuer>
+					<Issuer code="UKE" name="VISA Electron"></Issuer>
+					<Issuer code="MC" name="MasterCard Credit"></Issuer>
+					<Issuer code="MCDEBIT" name="MasterCard Debit"></Issuer>
+					<Issuer code="MAESTRO" name="Maestro"></Issuer>
+					<Issuer code="AMEX" name="American Express"></Issuer>
+					<Issuer code="DC" name="Diner's Club"></Issuer>
+					<Issuer code="JCB" name="JCB Card"></Issuer>
+					<Issuer code="LASER" name="Laser"></Issuer>
+				</Issuers>
+			</Service>
+			<Service name="PayPal">
+				<Issuers>
+					<Issuer code="PAYPAL" name="PayPal"></Issuer>
+				</Issuers>
+			</Service>
+		</Services>
+		<add key="sagepay.api.env" value="TEST" />
+		<add key="sagepay.api.enableClientValidation" value="true" />
+		
+		<!--If you wish to log the Protocol's underlying raw HTTP message bodies, set this property to
+    the name of a logger that you would like to receive log messages. This gives you full control
+    of how to log Protocol messages with your logging configuration (e.g. you can log messages to
+    a separate file easily).
+    If empty, the API will not attempt to log the raw messages.
+    Note that log4j uses the %c conversion character in its pattern layout to include the logger name.-->
+		<add key="sagepay.api.messageLoggerName" value="com.sagepay" />
+
+		<!--What SLF4J log level to log message bodies at.
+    If empty or set to an invalid log level, message bodies will not be logged.-->
+		<add key="sagepay.api.messageLoggerLevel" value="debug" />
+
+		<!--Transaction Settings -->
+		<add key="sagepay.api.protocolVersion" value="3.00" />
+		<add key="sagepay.kit.vendorName" value="" />
+		<add key="sagepay.kit.fullUrl" value="" />
+		<add key="sagepay.kit.currency" value="" />
+
+		<!--Optional setting. It's recommended to set the siteFqdn value to the Fully
+    Qualified Domain Name of your server.
+    This should start http:// or https:// and should be the name by which our servers can call back to yours
+    i.e. it MUST be resolvable externally, and have access granted to the Sage Pay servers
+    examples would be https://www.mysite.com or http://212.111.32.22/
+    NOTE: Do not include any URI path.
+    If you leave this value blank the kit will use the current host name-->
+		<add key="sagepay.kit.siteFqdn.LIVE" value="" />
+		<add key="sagepay.kit.siteFqdn.TEST" value="" />
+
+		<!--Mandatory. Usually PAYMENT. This can be DEFERRED or AUTHENTICATE if your Sage Pay
+    account supports those payment types
+    NB Ideally all DEFERRED transaction should be released within 6 days (according to card scheme rules).
+    DEFERRED transactions can be ABORTed before a RELEASE if necessary-->
+		<add key="sagepay.kit.defaultTransactionType" value="PAYMENT" />
+
+		<!--0 = If AVS/CV2 enabled then check them.  If rules apply, use rules (default).
+    1 = Force AVS/CV2 checks even if not enabled for the account. If rules apply, use rules.
+    2 = Force NO AVS/CV2 checks even if enabled on account.
+    3 = Force AVS/CV2 checks even if not enabled for the account but DON'T apply any rules.-->
+		<add key="sagepay.kit.applyAvsCv2" value="2" />
+
+		<!--0 = If 3D-Secure checks are possible and rules allow, perform the checks and apply the authorisation rules. (default)
+    1 = Force 3D-Secure checks for this transaction if possible and apply rules for authorisation.
+    2 = Do not perform 3D-Secure checks for this transaction and always authorise.
+    3 = Force 3D-Secure checks for this transaction if possible but ALWAYS obtain an auth code, irrespective of rule base.-->
+		<add key="sagepay.kit.apply3dSecure" value="2" />
+
+		<!--Optional property. (Server & Form protocols only)
+    For charities registered for Gift Aid, set to 1 to display the Gift Aid check
+    box on the payment pages, or else 0-->
+		<add key="sagepay.kit.allowGiftAid" value="1" />
+
+		<!-- Optional setting. if you are a vendor that has a merchant category code of 6012, then you can fill in extra details required for authorisation for Visa transactions -->
+		<add key="sagepay.kit.collectRecipientDetails" value="false"/>
+
+		<!-- Set this to true to use colon delimited format for the basket instead of XML -->
+		<!-- Note: The 'Trips' details on the 'Extra Information' page will not be displayed if this flag is set to true. -->
+		<add key="sagepay.kit.basketxml.disable" value="false" />
+
+		<!--Optional setting. Set to tell the Sage Pay System which merchant account to use. If omitted,
+	the system will use E, then M, then C by default
+	E = Use the e-commerce merchant account (default)
+	M = Use the mail order/telephone order account (if present)
+	C = Use the continuous authority merchant account (if present)-->
+		<add key="sagepay.kit.accountType" value="" />
+
+		<!--Optional setting. If you are a Sage Pay Partner and wish to flag transactions
+	with your unique partner id it should be set here-->
+		<add key="sagepay.kit.partnerID" value=""/>
+
+		<!--Use this key to send surcharge xml and override the default values set for your account. See the protocol documents for further
+	explanation on using the surcharge xml-->
+		<add key="sagepay.kit.surchargeXML" value="&lt;surcharges&gt;&lt;surcharge&gt;&lt;paymentType&gt;VISA&lt;/paymentType&gt;&lt;percentage&gt;2.50&lt;/percentage&gt;&lt;/surcharge&gt;&lt;/surcharges&gt;" />
+
+		<!--FORM Protocol Only Settings
+
+    Set this value to the Encryption password assigned to you by Sage Pay -->
+		<add key="sagepay.kit.form.encryptionPassword.TEST" value="" />
+		<add key="sagepay.kit.form.encryptionPassword.LIVE" value="" />
+
+		<!-- 0 = Do not send either customer or vendor e-mails,
+    1 = Send customer and vendor e-mails if address(es) are provided(DEFAULT).
+    2 = Send Vendor Email but not Customer Email. If you do not supply this field, 1 is assumed and e-mails are sent if addresses are provided.-->
+		<add key="sagepay.kit.form.sendEmail" value="1" />
+
+		<!--Optional setting. Set this to the mail address which will receive order confirmations and failures-->
+		<add key="sagepay.kit.form.vendorEmail" value="" />
+
+		<!--Optional setting. Contents of email message.
+    You can specify any custom message to send to your customers in their confirmation e-mail here
+    The field can contain HTML if you wish, and be different for each order.  This field is optional-->
+		<add key="sagepay.kit.form.emailMessage" value="Thanks for your order" />
+
+		<!--The Sage Pay server URLs to which customers will be sent for payment for each environment-->
+		<add key="sagepay.api.formPaymentUrl.LIVE" value="https://live.sagepay.com/gateway/service/vspform-register.vsp" />
+		<add key="sagepay.api.serverPaymentUrl.LIVE" value="https://live.sagepay.com/gateway/service/vspserver-register.vsp" />
+		<add key="sagepay.api.serverTokenRegisterUrl.LIVE" value="https://live.sagepay.com/gateway/service/token.vsp" />
+		<add key="sagepay.api.directPaymentUrl.LIVE" value="https://live.sagepay.com/gateway/service/vspdirect-register.vsp" />
+		<add key="sagepay.api.directTokenRegisterUrl.LIVE" value="https://live.sagepay.com/gateway/service/directtoken.vsp" />
+		<add key="sagepay.api.direct3dSecureUrl.LIVE" value="https://live.sagepay.com/gateway/service/direct3dcallback.vsp" />
+		<add key="sagepay.api.directPayPalCompleteUrl.LIVE" value="https://live.sagepay.com/gateway/service/complete.vsp" />
+		<add key="sagepay.api.tokenRemoveUrl.LIVE" value="https://live.sagepay.com/gateway/service/removetoken.vsp" />
+		<add key="sagepay.api.abortUrl.LIVE" value="https://live.sagepay.com/gateway/service/abort.vsp" />
+		<add key="sagepay.api.authoriseUrl.LIVE" value="https://live.sagepay.com/gateway/service/authorise.vsp" />
+		<add key="sagepay.api.cancelUrl.LIVE" value="https://live.sagepay.com/gateway/service/cancel.vsp" />
+		<add key="sagepay.api.refundUrl.LIVE" value="https://live.sagepay.com/gateway/service/refund.vsp" />
+		<add key="sagepay.api.releaseUrl.LIVE" value="https://live.sagepay.com/gateway/service/release.vsp" />
+		<add key="sagepay.api.repeatUrl.LIVE" value="https://live.sagepay.com/gateway/service/repeat.vsp" />
+		<add key="sagepay.api.voidUrl.LIVE" value="https://live.sagepay.com/gateway/service/void.vsp" />
+
+
+		<add key="sagepay.api.formPaymentUrl.TEST" value="https://test.sagepay.com/gateway/service/vspform-register.vsp" />
+		<add key="sagepay.api.serverPaymentUrl.TEST" value="https://test.sagepay.com/gateway/service/vspserver-register.vsp" />
+		<add key="sagepay.api.serverTokenRegisterUrl.TEST" value="https://test.sagepay.com/gateway/service/token.vsp" />
+		<add key="sagepay.api.directPaymentUrl.TEST" value="https://test.sagepay.com/gateway/service/vspdirect-register.vsp" />
+		<add key="sagepay.api.directTokenRegisterUrl.TEST" value="https://test.sagepay.com/gateway/service/directtoken.vsp" />
+		<add key="sagepay.api.direct3dSecureUrl.TEST" value="https://test.sagepay.com/gateway/service/direct3dcallback.vsp" />
+		<add key="sagepay.api.directPayPalCompleteUrl.TEST" value="https://test.sagepay.com/gateway/service/complete.vsp" />
+		<add key="sagepay.api.tokenRemoveUrl.TEST" value="https://test.sagepay.com/gateway/service/directtoken.vsp" />
+		<add key="sagepay.api.abortUrl.TEST" value="https://test.sagepay.com/gateway/service/abort.vsp" />
+		<add key="sagepay.api.authoriseUrl.TEST" value="https://test.sagepay.com/gateway/service/authorise.vsp" />
+		<add key="sagepay.api.cancelUrl.TEST" value="https://test.sagepay.com/gateway/service/cancel.vsp" />
+		<add key="sagepay.api.refundUrl.TEST" value="https://test.sagepay.com/gateway/service/refund.vsp" />
+		<add key="sagepay.api.releaseUrl.TEST" value="https://test.sagepay.com/gateway/service/release.vsp" />
+		<add key="sagepay.api.repeatUrl.TEST" value="https://test.sagepay.com/gateway/service/repeat.vsp" />
+		<add key="sagepay.api.voidUrl.TEST" value="https://test.sagepay.com/gateway/service/void.vsp" />
+	</provider>
+</providers>

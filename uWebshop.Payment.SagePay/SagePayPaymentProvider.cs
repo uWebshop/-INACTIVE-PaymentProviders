@@ -28,74 +28,73 @@ namespace uWebshop.Payment.SagePay
 
             var paymentMethods = new List<PaymentProviderMethod>();
 
-            foreach (var service in enabledServices.Descendants("Service"))
-            {
-                var serviceName = service.Attribute("name").Value;
-                var serviceTitle = serviceName;
+			if (enabledServices != null)
+				foreach (var service in enabledServices.Descendants("Service"))
+				{
+					var serviceName = service.Attribute("name").Value;
+					var serviceTitle = serviceName;
 
-                if (service.Attribute("title") != null)
-                {
-                    serviceTitle = service.Attribute("title").Value;
-                }
+					if (service.Attribute("title") != null)
+					{
+						serviceTitle = service.Attribute("title").Value;
+					}
 
-                var paymentImageId = 0;
+					var paymentImageId = 0;
 
-                if (service.Descendants().Any())
-                {
-                    foreach (var issuer in service.Descendants("Issuer"))
-                    {
-                        var name = issuer.Element("Name").Value;
-                        var code = issuer.Element("Code").Value;
+					if (service.Descendants().Any())
+					{
+						foreach (var issuer in service.Descendants("Issuer"))
+						{
+							var name = issuer.Attribute("name").Value;
+							var code = issuer.Attribute("code").Value;
 
-                        var method = code;
+							var method = code;
 
-                        var nameForLogoDictionaryItem = string.Format("{0}LogoId", code.Replace(" ", string.Empty));
+							var nameForLogoDictionaryItem = string.Format("{0}LogoId", code.Replace(" ", string.Empty));
 
-                        var logoDictionaryItem = library.GetDictionaryItem(nameForLogoDictionaryItem);
+							var logoDictionaryItem = library.GetDictionaryItem(nameForLogoDictionaryItem);
 
-                        if (string.IsNullOrEmpty(logoDictionaryItem))
-                        {
-                            int.TryParse(library.GetDictionaryItem(nameForLogoDictionaryItem), out paymentImageId);
-                        }
+							if (string.IsNullOrEmpty(logoDictionaryItem))
+							{
+								int.TryParse(library.GetDictionaryItem(nameForLogoDictionaryItem), out paymentImageId);
+							}
 
-                        paymentMethods.Add(new PaymentProviderMethod
-                        {
-                            Id = method,
-                            Description = name,
-                            Title = name,
-                            Name = serviceTitle,
-                            ProviderName = GetName(),
-                            ImageId = paymentImageId
-                        });
-                    }
-                }
-                else
-                {
-                    var nameForLogoDictionaryItem = string.Format("{0}LogoId", serviceName.Replace(" ", string.Empty));
+							paymentMethods.Add(new PaymentProviderMethod
+							{
+								Id = method,
+								Description = name,
+								Title = name,
+								Name = serviceTitle,
+								ProviderName = GetName(),
+								ImageId = paymentImageId
+							});
+						}
+					}
+					else
+					{
+						var nameForLogoDictionaryItem = string.Format("{0}LogoId", serviceName.Replace(" ", string.Empty));
 
-                    var logoDictionaryItem = library.GetDictionaryItem(nameForLogoDictionaryItem);
+						var logoDictionaryItem = library.GetDictionaryItem(nameForLogoDictionaryItem);
 
-                    if (string.IsNullOrEmpty(logoDictionaryItem))
-                    {
-                        int.TryParse(library.GetDictionaryItem(nameForLogoDictionaryItem), out paymentImageId);
-                    }
+						if (string.IsNullOrEmpty(logoDictionaryItem))
+						{
+							int.TryParse(library.GetDictionaryItem(nameForLogoDictionaryItem), out paymentImageId);
+						}
 
-                    paymentMethods.Add(new PaymentProviderMethod
-                    {
-                        Id = serviceName,
-                        Description = serviceName,
-                        Title = serviceTitle,
-                        Name = serviceName,
-                        ProviderName = GetName(),
-                        ImageId = paymentImageId
-                    });
-                }
-            }
-
-
+						paymentMethods.Add(new PaymentProviderMethod
+						{
+							Id = serviceName,
+							Description = serviceName,
+							Title = serviceTitle,
+							Name = serviceName,
+							ProviderName = GetName(),
+							ImageId = paymentImageId
+						});
+					}
+				}
 
 
-            return paymentMethods;
+			return paymentMethods;
 		}
 	}
 }
