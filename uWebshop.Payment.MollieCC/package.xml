@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
+<!-- THERE IS NO INSTALLER PRESENT YET, JUST ADD THE 'MollieCC' node and the uWebshop.Payment.MollieCC.dll manually-->
 <umbPackage>
 	<info>
 		<package>
-			<name>Mollie for uWebshop2</name>
-			<version>2.4.2.0</version>
+			<name>Mollie Creditcard for uWebshop 2</name>
+			<version>1.0.0.0</version>
 			<license url="http://uwebshop.com/terms-conditions">uWebshop License Agreement</license>
 			<url>http://www.uWebshop.com</url>
 			<requirements>
@@ -18,10 +18,10 @@
 			<website>http://www.uWebshop.com</website>
 		</author>
 		<readme>
-			<![CDATA[Mollie Payment Provider Provider for uWebshop2.0
+			<![CDATA[Mollie Creditcard Payment Provider Provider for uWebshop2.0
             
-            This package wil install the Mollie payment provider for uWebshop 2.0.
-            It installs the Mollie Provider DLL and creates the Mollie Node in the Payment Providers Section.
+            This package wil install the Mollie Creditcard payment provider for uWebshop 2.0.
+            It installs the Mollie Creditcard Provider DLL and creates the Mollie Node in the Payment Providers Section.
                         
                         
             Manual Installation guide:
@@ -36,7 +36,7 @@
             
             You should add the following lines to the PaymentProviders.config file:
             
-            <provider title="Mollie">
+            <provider title="MollieCC">
               <PSPID>#YOUR PSID#</PSPID>
               <SecureHashAlgorithm>SHA256</SecureHashAlgorithm>
               <SHAInSignature>#YOUR SHA SIGNATURE</SHAInSignature>
@@ -44,30 +44,25 @@
               <testURL>https://secure.ogone.com/ncol/test/orderstandard.asp</testURL>
             </provider> 
            
-            In the uWebshop section, under Payment Providers > Providers you'll create a new Payment Provider Node called "Mollie".
+            In the uWebshop section, under Payment Providers > Providers you'll create a new Payment Provider Node called "MollieCC".
             The "Payment Provider Type" should be "Online Payment Provider"
-            The Node Name should be "Mollie"
-            The DLLname is "uWebshop.Payment.Mollie.dll".
+            The Node Name should be "MollieCC"
+            The DLLname is "uWebshop.Payment.MollieCC.dll".
             The rest can be set to your own needs.      
             ]]>
 		</readme>
 	</info>
 	<files>
 		<file>
-			<guid>uWebshop.Payment.Mollie.dll</guid>
+			<guid>uWebshop.Payment.MollieCC.dll</guid>
 			<orgPath>/bin</orgPath>
-			<orgName>uWebshop.Payment.Mollie.dll</orgName>
+			<orgName>uWebshop.Payment.MollieCC.dll</orgName>
 		</file>
 		<file>
-			<guid>Mollie.iDEAL.dll</guid>
-			<orgPath>/bin</orgPath>
-			<orgName>Mollie.iDEAL.dll</orgName>
-		</file>
-		<file>
-			<guid>uWebshopMollieInstaller.ascx</guid>
+			<guid>uWebshopMollieCCInstaller.ascx</guid>
 			<orgPath>/usercontrols/uWebshop</orgPath>
-			<orgName>uWebshopMollieInstaller.ascx</orgName>
+			<orgName>uWebshopMollieCCInstaller.ascx</orgName>
 		</file>
 	</files>
-	<control>/usercontrols/uWebshop/uWebshopMollieInstaller.ascx</control>
+	<control>/usercontrols/uWebshop/uWebshopMollieCCInstaller.ascx</control>
 </umbPackage>
