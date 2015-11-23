@@ -1,0 +1,9 @@
+﻿<?xml version="1.0"?>
+
+<providers>
+  <provider title="IngAdvanced">
+    <IssuerId>1111111</IssuerId>
+    <MerchantId>222222</MerchantId>
+    <EntranceCode>333333</EntranceCode>
+  </provider>
+</providers>
