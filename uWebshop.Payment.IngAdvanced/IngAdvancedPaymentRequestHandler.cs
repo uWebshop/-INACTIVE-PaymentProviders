@@ -31,7 +31,7 @@ namespace uWebshop.Payment.IngAdvanced
                 //    <EntranceCode>22222222</EntranceCode>
                 //  </provider>
 
-                var issuerId = paymentProvider.GetSetting("IssuerId");
+                var issuerId = orderInfo.PaymentInfo.MethodId;
                 var merchantId = paymentProvider.GetSetting("MerchantId");
                 var entranceCode = paymentProvider.GetSetting("EntranceCode");
                 

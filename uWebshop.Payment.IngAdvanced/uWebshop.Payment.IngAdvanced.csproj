@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="iDeal, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\iDeal.NET.1.0.3\lib\net40\iDeal.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="iDealAdvancedConnector">
       <HintPath>..\Binary Dependencies\iDealAdvancedConnector.dll</HintPath>
     </Reference>
@@ -58,6 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="PaymentConfigExample.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
